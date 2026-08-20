@@ -1,7 +1,12 @@
 import type { IDataObject, INodeProperties, JsonObject } from 'n8n-workflow';
 import { lagoApiRequest } from '../../shared/transport';
 import type { OperationHandler } from '../../shared/types';
-import { AGGREGATIONS_NEEDING_FIELD, billableMetricFields, buildFilters } from './fields';
+import {
+	AGGREGATIONS_NEEDING_FIELD,
+	AGGREGATIONS_SUPPORTING_RECURRING,
+	billableMetricFields,
+	buildFilters,
+} from './fields';
 
 export const createFields: INodeProperties[] = billableMetricFields('create');
 
@@ -21,6 +26,12 @@ export const create: OperationHandler = async function (index) {
 
 	if (AGGREGATIONS_NEEDING_FIELD.includes(aggregationType)) {
 		billableMetric.field_name = this.getNodeParameter('fieldName', index) as string;
+	}
+
+	// Read only where the field is shown, so a value left behind by switching the aggregation
+	// type is not sent on a metric Lago would reject it for.
+	if (AGGREGATIONS_SUPPORTING_RECURRING.includes(aggregationType)) {
+		billableMetric.recurring = this.getNodeParameter('recurring', index, false) as boolean;
 	}
 
 	const built = buildFilters(filters);

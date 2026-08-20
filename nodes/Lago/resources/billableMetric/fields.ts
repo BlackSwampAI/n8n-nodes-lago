@@ -23,6 +23,19 @@ export const AGGREGATIONS_NEEDING_FIELD = AGGREGATION_TYPES.map((type) => type.v
 );
 
 /**
+ * Aggregations Lago will persist across billing periods.
+ *
+ * Setting `recurring` on any other aggregation is refused outright with
+ * `recurring: not_compatible_with_aggregation_type`, so the field is shown only where the server
+ * accepts it rather than offered everywhere and rejected on submit.
+ */
+export const AGGREGATIONS_SUPPORTING_RECURRING = [
+	'sum_agg',
+	'unique_count_agg',
+	'weighted_sum_agg',
+];
+
+/**
  * The writable fields of a billable metric, shared by Create and Update.
  *
  * Create requires code, name and aggregation type; Update takes the same shape with everything
@@ -81,6 +94,19 @@ export function billableMetricFields(operation: 'create' | 'update'): INodePrope
 							show: { ...show, aggregationType: AGGREGATIONS_NEEDING_FIELD },
 						},
 					} satisfies INodeProperties,
+					// Same reasoning as Field Name: Lago refuses `recurring` on the other three
+					// aggregations, so it is shown only where it can actually be set.
+					{
+						displayName: 'Recurring',
+						name: 'recurring',
+						type: 'boolean',
+						default: false,
+						description:
+							'Whether accumulated units carry into the next billing period instead of resetting to zero',
+						displayOptions: {
+							show: { ...show, aggregationType: AGGREGATIONS_SUPPORTING_RECURRING },
+						},
+					} satisfies INodeProperties,
 				]
 			: [
 					{
@@ -125,6 +151,17 @@ export function billableMetricFields(operation: 'create' | 'update'): INodePrope
 								type: 'string' as const,
 								default: '',
 							},
+							// Update addresses a metric by code without knowing its aggregation type,
+							// so this cannot be shown conditionally the way it is on create. The
+							// compatible aggregations are named instead.
+							{
+								displayName: 'Recurring',
+								name: 'recurring',
+								type: 'boolean' as const,
+								default: false,
+								description:
+									'Whether accumulated units carry into the next billing period instead of resetting to zero. Only Sum, Unique Count and Weighted Sum accept this; Lago rejects it for the others.',
+							},
 						]),
 				{
 					displayName: 'Description',
@@ -140,14 +177,6 @@ export function billableMetricFields(operation: 'create' | 'update'): INodePrope
 					placeholder: 'e.g. round(event.properties.units * 2)',
 					description:
 						'Computes event units from event properties before aggregation. Properties are addressed as event.properties.&lt;key&gt;, and the event time as event.timestamp. Use the Evaluate Expression operation to check one against a sample event before saving it.',
-				},
-				{
-					displayName: 'Recurring',
-					name: 'recurring',
-					type: 'boolean',
-					default: false,
-					description:
-						'Whether accumulated units carry into the next billing period instead of resetting to zero',
 				},
 				{
 					displayName: 'Rounding Function',
