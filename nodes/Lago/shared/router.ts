@@ -13,6 +13,8 @@ import { invoiceOperations } from '../resources/invoice';
 import { planOperations } from '../resources/plan';
 import { planChargeOperations } from '../resources/planCharge';
 import { subscriptionOperations } from '../resources/subscription';
+import { walletOperations } from '../resources/wallet';
+import { walletTransactionOperations } from '../resources/walletTransaction';
 import type { OperationHandlers } from './types';
 
 /**
@@ -31,6 +33,8 @@ export const resources: Record<string, OperationHandlers> = {
 	plan: planOperations,
 	planCharge: planChargeOperations,
 	subscription: subscriptionOperations,
+	wallet: walletOperations,
+	walletTransaction: walletTransactionOperations,
 };
 
 /**
