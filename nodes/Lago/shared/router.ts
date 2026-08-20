@@ -6,6 +6,7 @@ import {
 } from 'n8n-workflow';
 import { billableMetricOperations } from '../resources/billableMetric';
 import { customerOperations } from '../resources/customer';
+import { planOperations } from '../resources/plan';
 import type { OperationHandlers } from './types';
 
 /**
@@ -17,6 +18,7 @@ import type { OperationHandlers } from './types';
 export const resources: Record<string, OperationHandlers> = {
 	billableMetric: billableMetricOperations,
 	customer: customerOperations,
+	plan: planOperations,
 };
 
 /**
