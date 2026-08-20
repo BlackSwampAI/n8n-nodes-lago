@@ -14,6 +14,8 @@ import { invoiceDescription } from './resources/invoice';
 import { planDescription } from './resources/plan';
 import { planChargeDescription } from './resources/planCharge';
 import { subscriptionDescription } from './resources/subscription';
+import { walletDescription } from './resources/wallet';
+import { walletTransactionDescription } from './resources/walletTransaction';
 import { getBillableMetricCodes, getBillableMetricIds } from './shared/loadOptions';
 import { routeOperations } from './shared/router';
 
@@ -63,6 +65,8 @@ export class Lago implements INodeType {
 					{ name: 'Plan', value: 'plan' },
 					{ name: 'Plan Charge', value: 'planCharge' },
 					{ name: 'Subscription', value: 'subscription' },
+					{ name: 'Wallet', value: 'wallet' },
+					{ name: 'Wallet Transaction', value: 'walletTransaction' },
 				],
 			},
 			...billableMetricDescription,
@@ -74,6 +78,8 @@ export class Lago implements INodeType {
 			...planDescription,
 			...planChargeDescription,
 			...subscriptionDescription,
+			...walletDescription,
+			...walletTransactionDescription,
 		],
 	};
 

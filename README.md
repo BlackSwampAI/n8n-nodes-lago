@@ -24,19 +24,29 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 The **Lago** node currently supports:
 
-| Resource        | Operations                                                                                       |
-| --------------- | ------------------------------------------------------------------------------------------------ |
-| Billable Metric | Create, Get, Get Many, Update, Delete, Evaluate Expression                                       |
-| Coupon          | Create, Get, Get Many, Update, Delete, Apply to Customer, Get Many Applied, Remove from Customer |
-| Credit Note     | Create, Estimate, Get, Get Many, Download, Void                                                  |
-| Customer        | Create or Update, Get, Get Many, Delete                                                          |
-| Event           | Send, Send Batch, Get, Get Many, Estimate Fees                                                   |
-| Invoice         | Create One-Off, Get, Get Many, Update, Finalize, Void, Download, Retry Payment                   |
-| Plan            | Create, Get, Get Many, Update, Delete                                                            |
-| Plan Charge     | Create, Get, Get Many, Update, Delete                                                            |
-| Subscription    | Create, Get, Get Many, Update, Terminate                                                         |
+| Resource           | Operations                                                                                       |
+| ------------------ | ------------------------------------------------------------------------------------------------ |
+| Billable Metric    | Create, Get, Get Many, Update, Delete, Evaluate Expression                                       |
+| Coupon             | Create, Get, Get Many, Update, Delete, Apply to Customer, Get Many Applied, Remove from Customer |
+| Credit Note        | Create, Estimate, Get, Get Many, Download, Void                                                  |
+| Customer           | Create or Update, Get, Get Many, Delete                                                          |
+| Event              | Send, Send Batch, Get, Get Many, Estimate Fees                                                   |
+| Invoice            | Create One-Off, Get, Get Many, Update, Finalize, Void, Download, Retry Payment                   |
+| Plan               | Create, Get, Get Many, Update, Delete                                                            |
+| Plan Charge        | Create, Get, Get Many, Update, Delete                                                            |
+| Subscription       | Create, Get, Get Many, Update, Terminate                                                         |
+| Wallet             | Create, Get, Get Many, Update, Terminate                                                         |
+| Wallet Transaction | Create, Get Many                                                                                 |
 
-Further resources land per milestone: Wallet, Wallet Transaction and Webhook Endpoint.
+Further resources land per milestone: Webhook Endpoint, then a Lago Trigger.
+
+Prepaid credit wallets distinguish **paid** credits from **granted** credits: granted credits
+settle immediately, while paid credits are recorded as a pending transaction until the top-up
+invoice is paid, so they do not appear in the balance straight away. One top-up request can
+therefore return more than one transaction. Wallets are **terminated, not deleted**.
+
+Automatic recurring and threshold top-ups are **not exposed**: Lago answers HTTP 500 on the free
+edition rather than refusing cleanly, so offering the field would make the node look broken.
 
 Credit note **Create** and **Estimate** require a Lago premium licence and are marked as such;
 reading, downloading and voiding credit notes works on the free edition. Lago answers 403 for a
