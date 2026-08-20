@@ -1,4 +1,12 @@
-import { NodeConnectionTypes, type INodeType, type INodeTypeDescription } from 'n8n-workflow';
+import {
+	NodeConnectionTypes,
+	type IExecuteFunctions,
+	type INodeExecutionData,
+	type INodeType,
+	type INodeTypeDescription,
+} from 'n8n-workflow';
+import { customerDescription } from './resources/customer';
+import { routeOperations } from './shared/router';
 
 export class Lago implements INodeType {
 	description: INodeTypeDescription = {
@@ -29,7 +37,20 @@ export class Lago implements INodeType {
 				'Content-Type': 'application/json',
 			},
 		},
-		// Resources and operations are added per milestone, starting with Customer.
-		properties: [],
+		properties: [
+			{
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,
+				default: 'customer',
+				options: [{ name: 'Customer', value: 'customer' }],
+			},
+			...customerDescription,
+		],
 	};
+
+	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+		return routeOperations.call(this);
+	}
 }
