@@ -3,6 +3,7 @@ import {
 	describeLagoError,
 	lagoServerMessage,
 	lagoValidationMessage,
+	rootHttpError,
 } from '../../nodes/Lago/shared/errors';
 
 /** Shapes an error the way n8n's HTTP helper surfaces one. */
@@ -67,6 +68,105 @@ describe('lagoServerMessage', () => {
 
 	it('ignores an HTML body', () => {
 		expect(lagoServerMessage('<!doctype html><html></html>')).toBeUndefined();
+	});
+});
+
+// n8n's httpRequestWithAuthentication wraps every failure in a NodeApiError before node code
+// sees it, keeping the original only as `cause`. These fixtures reproduce that shape, which the
+// integration tests could not: they drive real HTTP through a stand-in context that throws the
+// raw response error, so the wrapping never happened there.
+function n8nWrapped(status: number, body: unknown, headers?: Record<string, unknown>) {
+	const inner = Object.assign(new Error(`Request failed with status code ${status}`), {
+		isAxiosError: true,
+		response: { status, data: body, headers },
+	});
+	return Object.assign(new Error('The resource you are requesting could not be found'), {
+		httpCode: String(status),
+		cause: inner,
+	});
+}
+
+describe('rootHttpError', () => {
+	it('finds the response through a cause chain', () => {
+		const wrapped = n8nWrapped(404, { status: 404, code: 'customer_not_found' });
+		expect((rootHttpError(wrapped) as { response: { status: number } }).response.status).toBe(404);
+	});
+
+	it('returns an unwrapped error unchanged', () => {
+		const plain = httpError(404, { code: 'x' });
+		expect(rootHttpError(plain)).toBe(plain);
+	});
+
+	it('returns the original when nothing in the chain carries a response', () => {
+		const bare = new Error('boom');
+		expect(rootHttpError(bare)).toBe(bare);
+	});
+
+	it('does not loop on a self-referencing cause', () => {
+		const looped: { cause?: unknown } = {};
+		looped.cause = looped;
+		expect(() => rootHttpError(looped)).not.toThrow();
+	});
+
+	it('survives junk input', () => {
+		expect(rootHttpError(undefined)).toBeUndefined();
+		expect(rootHttpError(null)).toBeNull();
+	});
+});
+
+// Each of these fails against the pre-fix extractor, which read error.response directly and so
+// found nothing once n8n had wrapped the error.
+describe('describeLagoError through n8n wrapping', () => {
+	it('recovers the Lago error code from a wrapped 404', () => {
+		const described = describeLagoError(
+			n8nWrapped(404, { status: 404, error: 'Not Found', code: 'customer_not_found' }),
+			{ resource: 'Customer', resourceId: 'acme' },
+		);
+		expect(described.message).toBe('Customer acme was not found');
+		expect(described.description).toMatch(/customer_not_found/);
+	});
+
+	// The one that matters most: error_details is the only part of a Lago validation failure that
+	// names the offending field, and it lives two levels down.
+	it('recovers validation details from a wrapped 422', () => {
+		const described = describeLagoError(
+			n8nWrapped(422, {
+				status: 422,
+				code: 'validation_errors',
+				error_details: { external_id: ['value_is_mandatory'] },
+			}),
+			{ resource: 'Customer' },
+		);
+		expect(described.message).toBe('external_id: value_is_mandatory');
+	});
+
+	it('recovers the rate-limit reset from a wrapped 429', () => {
+		const described = describeLagoError(n8nWrapped(429, {}, { 'x-ratelimit-reset': '7' }));
+		expect(described.description).toMatch(/Retry in 7s/);
+	});
+
+	// Newer n8n versions drop the cause and copy the parsed body to context.data instead. Both
+	// shapes are handled, because a community node runs against whichever version the user has.
+	it('recovers the body when the version keeps it at context.data instead of cause', () => {
+		const wrapper = Object.assign(new Error('Your request is invalid'), {
+			httpCode: '422',
+			context: {
+				data: {
+					status: 422,
+					code: 'validation_errors',
+					error_details: { currency: ['is not supported'] },
+				},
+			},
+		});
+
+		expect(describeLagoError(wrapper, { resource: 'Customer' }).message).toBe(
+			'currency: is not supported',
+		);
+	});
+
+	it('still reports the status when only the wrapper carries it', () => {
+		const described = describeLagoError({ httpCode: '401', cause: new Error('nope') });
+		expect(described.message).toBe('Lago rejected the API key');
 	});
 });
 
