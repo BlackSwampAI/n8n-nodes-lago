@@ -8,6 +8,7 @@ import {
 import { billableMetricDescription } from './resources/billableMetric';
 import { customerDescription } from './resources/customer';
 import { planDescription } from './resources/plan';
+import { subscriptionDescription } from './resources/subscription';
 import { routeOperations } from './shared/router';
 
 export class Lago implements INodeType {
@@ -50,11 +51,13 @@ export class Lago implements INodeType {
 					{ name: 'Billable Metric', value: 'billableMetric' },
 					{ name: 'Customer', value: 'customer' },
 					{ name: 'Plan', value: 'plan' },
+					{ name: 'Subscription', value: 'subscription' },
 				],
 			},
 			...billableMetricDescription,
 			...customerDescription,
 			...planDescription,
+			...subscriptionDescription,
 		],
 	};
 

@@ -29,9 +29,17 @@ The **Lago** node currently supports:
 | Billable Metric | Create, Get, Get Many, Update, Delete, Evaluate Expression |
 | Customer        | Create or Update, Get, Get Many, Delete                    |
 | Plan            | Create, Get, Get Many, Update, Delete                      |
+| Subscription    | Create, Get, Get Many, Update, Terminate                   |
 
-Further resources land per milestone: Plan Charge, Subscription, Event, Invoice, Credit Note, Coupon,
+Further resources land per milestone: Plan Charge, Event, Invoice, Credit Note, Coupon,
 Wallet, Wallet Transaction and Webhook Endpoint.
+
+Subscriptions are **terminated, not deleted** — the record is kept with a `terminated` status.
+Note that Get Many returns only `active` subscriptions unless a status filter is set, and that a
+terminated subscription reports as not found by Get while still appearing in Get Many. Sending
+Create again with the same external ID and a different plan performs an **upgrade or downgrade**:
+an upgrade replaces the subscription immediately, while a downgrade is queued as `pending` until
+the period ends.
 
 Plan amounts are in the currency's **smallest unit** — `10000` is 100.00, not 10000.00. Plan
 deletion is processed asynchronously, so a deleted plan stays readable for a moment afterwards.
