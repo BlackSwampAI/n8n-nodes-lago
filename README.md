@@ -24,12 +24,17 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 The **Lago** node currently supports:
 
-| Resource | Operations                              |
-| -------- | --------------------------------------- |
-| Customer | Create or Update, Get, Get Many, Delete |
+| Resource        | Operations                                                 |
+| --------------- | ---------------------------------------------------------- |
+| Billable Metric | Create, Get, Get Many, Update, Delete, Evaluate Expression |
+| Customer        | Create or Update, Get, Get Many, Delete                    |
 
-Further resources land per milestone: Billable Metric, Plan, Subscription, Event, Invoice,
-Credit Note, Coupon, Wallet, Wallet Transaction and Webhook Endpoint.
+Further resources land per milestone: Plan, Subscription, Event, Invoice, Credit Note, Coupon,
+Wallet, Wallet Transaction and Webhook Endpoint.
+
+Billable metric **expressions** address event properties as `event.properties.<key>` and the
+event time as `event.timestamp`. The **Evaluate Expression** operation checks one against a
+sample event, so a metering expression can be validated before any usage depends on it.
 
 Customer has no update endpoint in the Lago API — `POST /customers` upserts on the external ID — so the node exposes a single **Create or Update** operation rather than implying semantics the API does not have.
 

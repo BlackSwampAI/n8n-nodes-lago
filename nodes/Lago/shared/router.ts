@@ -4,10 +4,18 @@ import {
 	type IExecuteFunctions,
 	type INodeExecutionData,
 } from 'n8n-workflow';
+import { billableMetricOperations } from '../resources/billableMetric';
 import { customerOperations } from '../resources/customer';
 import type { OperationHandlers } from './types';
 
-const resources: Record<string, OperationHandlers> = {
+/**
+ * Every resource the node can dispatch to.
+ *
+ * Exported so tests can assert that the UI and the handler map agree without reimplementing the
+ * list, which would defeat the point of checking.
+ */
+export const resources: Record<string, OperationHandlers> = {
+	billableMetric: billableMetricOperations,
 	customer: customerOperations,
 };
 
