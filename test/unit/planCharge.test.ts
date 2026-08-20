@@ -80,6 +80,24 @@ describe('money fields', () => {
 		expect(fieldFor('amount')?.description).toMatch(/rejects a plain number/i);
 	});
 
+	// Silently stored as zero on the free edition, with a 200 and no error, so the description
+	// is the only thing that can warn anyone.
+	it('warns that the minimum amount is premium and silently ignored', () => {
+		const minimum = (
+			(fieldFor('additionalFields')?.options ?? []) as Array<{ name: string; description?: string }>
+		).find((option) => option.name === 'min_amount_cents');
+		expect(minimum?.description).toMatch(/premium licence/i);
+		expect(minimum?.description).toMatch(/silently stores zero/i);
+	});
+
+	// Lago answers 422 invalid_billable_metric_or_charge_model unless the metric is recurring.
+	it('warns that prorated needs a recurring metric', () => {
+		const prorated = (
+			(fieldFor('additionalFields')?.options ?? []) as Array<{ name: string; description?: string }>
+		).find((option) => option.name === 'prorated');
+		expect(prorated?.description).toMatch(/recurring/i);
+	});
+
 	// The one exception, and the reason it is called out in its own description.
 	it('keeps the minimum amount in cents, matching the plan rather than the charge', () => {
 		const minimum = (

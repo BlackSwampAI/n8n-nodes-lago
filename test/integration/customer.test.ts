@@ -175,6 +175,18 @@ describeLago('Customer resource against a live Lago instance', () => {
 		});
 	});
 
+	// Accepted with a 200 and then stored as null, so a workflow author gets no signal that the
+	// customer stayed on the organization's timezone.
+	describe('premium fields', () => {
+		it('silently ignores a customer timezone on the free edition', async () => {
+			const externalId = `${runId}-timezone`;
+			const [item] = await createCustomer(externalId, { timezone: 'Europe/Paris' });
+
+			expect(item.json.timezone).toBeNull();
+			expect(item.json.applicable_timezone).toBe('UTC');
+		});
+	});
+
 	describe('failure handling', () => {
 		it('reports a missing customer with a message naming it', async () => {
 			await expect(

@@ -212,6 +212,18 @@ export function describeLagoError(
 		};
 	}
 
+	// Lago answers 403 for a premium-gated feature as well as for a bad key, using
+	// `feature_unavailable` to tell them apart. Without this check a free-edition user asking for
+	// a premium operation is told their credential is wrong, which sends them to fix something
+	// that is not broken.
+	if (code === 'feature_unavailable') {
+		return {
+			message: `${subject} requires a Lago premium licence`,
+			description:
+				'This operation is not available on the free edition. The rest of the node works without a licence — see the operation description for which features are gated.',
+		};
+	}
+
 	switch (status) {
 		case 401:
 		case 403:
