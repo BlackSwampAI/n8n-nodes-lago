@@ -8,6 +8,7 @@ import {
 import { billableMetricDescription } from './resources/billableMetric';
 import { customerDescription } from './resources/customer';
 import { eventDescription } from './resources/event';
+import { invoiceDescription } from './resources/invoice';
 import { planDescription } from './resources/plan';
 import { planChargeDescription } from './resources/planCharge';
 import { subscriptionDescription } from './resources/subscription';
@@ -54,6 +55,7 @@ export class Lago implements INodeType {
 					{ name: 'Billable Metric', value: 'billableMetric' },
 					{ name: 'Customer', value: 'customer' },
 					{ name: 'Event', value: 'event' },
+					{ name: 'Invoice', value: 'invoice' },
 					{ name: 'Plan', value: 'plan' },
 					{ name: 'Plan Charge', value: 'planCharge' },
 					{ name: 'Subscription', value: 'subscription' },
@@ -62,6 +64,7 @@ export class Lago implements INodeType {
 			...billableMetricDescription,
 			...customerDescription,
 			...eventDescription,
+			...invoiceDescription,
 			...planDescription,
 			...planChargeDescription,
 			...subscriptionDescription,

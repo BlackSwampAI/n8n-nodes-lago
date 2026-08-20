@@ -24,17 +24,24 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 The **Lago** node currently supports:
 
-| Resource        | Operations                                                 |
-| --------------- | ---------------------------------------------------------- |
-| Billable Metric | Create, Get, Get Many, Update, Delete, Evaluate Expression |
-| Customer        | Create or Update, Get, Get Many, Delete                    |
-| Event           | Send, Send Batch, Get, Get Many, Estimate Fees             |
-| Plan            | Create, Get, Get Many, Update, Delete                      |
-| Plan Charge     | Create, Get, Get Many, Update, Delete                      |
-| Subscription    | Create, Get, Get Many, Update, Terminate                   |
+| Resource        | Operations                                                                     |
+| --------------- | ------------------------------------------------------------------------------ |
+| Billable Metric | Create, Get, Get Many, Update, Delete, Evaluate Expression                     |
+| Customer        | Create or Update, Get, Get Many, Delete                                        |
+| Event           | Send, Send Batch, Get, Get Many, Estimate Fees                                 |
+| Invoice         | Create One-Off, Get, Get Many, Update, Finalize, Void, Download, Retry Payment |
+| Plan            | Create, Get, Get Many, Update, Delete                                          |
+| Plan Charge     | Create, Get, Get Many, Update, Delete                                          |
+| Subscription    | Create, Get, Get Many, Update, Terminate                                       |
 
-Further resources land per milestone: Invoice, Credit Note, Coupon,
+Further resources land per milestone: Credit Note, Coupon,
 Wallet, Wallet Transaction and Webhook Endpoint.
+
+Invoices do not follow ordinary CRUD. A one-off invoice is issued **already finalized**, so
+there is no draft to finalize afterwards; finalizing an invoice that is already finalized is
+reported by Lago as _not found_. Voiding keeps the record with a `voided` status. Download
+renders the PDF asynchronously, so `file_url` may still be empty on the first call. Invoice
+refresh and draft invoices both require a Lago premium licence.
 
 Usage events are the metering half of the integration. The **Billable Metric Code** is chosen
 from the metrics defined in Lago rather than typed, because Lago accepts an event whose code

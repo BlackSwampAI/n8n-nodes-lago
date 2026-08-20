@@ -37,9 +37,9 @@ x-backend-env: &backend-env
   LAGO_ORG_USER_EMAIL: admin@lago.test
   LAGO_ORG_USER_PASSWORD: supersecret
   LAGO_ORG_API_KEY: ${LAGO_ORG_API_KEY:-n8n-nodes-lago-test-key}
-  # PDF rendering needs a separate Gotenberg service. It is left out until invoice and
-  # credit-note download operations land, so the stack stays small and boots faster.
-  LAGO_DISABLE_PDF_GENERATION: 'true'
+  # Invoice and credit-note downloads render through Gotenberg, so the service below is
+  # required for them to work at all.
+  LAGO_PDF_URL: http://pdf:3000
   LAGO_DISABLE_SEGMENT: 'true'
 
 services:
@@ -96,6 +96,12 @@ services:
       timeout: 10s
       retries: 60
       start_period: 30s
+
+  # Renders invoice and credit-note PDFs. Without it the download endpoints accept the
+  # request and then fail in the background, which looks like a node bug rather than a
+  # missing service.
+  pdf:
+    image: getlago/lago-gotenberg:7.8.2
 
   # Sidekiq. Billing, invoice generation and webhook delivery are all asynchronous, so
   # without this the REST calls succeed but nothing is ever produced.
