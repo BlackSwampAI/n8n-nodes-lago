@@ -8,6 +8,7 @@ import { billableMetricOperations } from '../resources/billableMetric';
 import { customerOperations } from '../resources/customer';
 import { eventOperations } from '../resources/event';
 import { planOperations } from '../resources/plan';
+import { planChargeOperations } from '../resources/planCharge';
 import { subscriptionOperations } from '../resources/subscription';
 import type { OperationHandlers } from './types';
 
@@ -22,6 +23,7 @@ export const resources: Record<string, OperationHandlers> = {
 	customer: customerOperations,
 	event: eventOperations,
 	plan: planOperations,
+	planCharge: planChargeOperations,
 	subscription: subscriptionOperations,
 };
 

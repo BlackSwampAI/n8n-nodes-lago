@@ -9,8 +9,9 @@ import { billableMetricDescription } from './resources/billableMetric';
 import { customerDescription } from './resources/customer';
 import { eventDescription } from './resources/event';
 import { planDescription } from './resources/plan';
+import { planChargeDescription } from './resources/planCharge';
 import { subscriptionDescription } from './resources/subscription';
-import { getBillableMetricCodes } from './shared/loadOptions';
+import { getBillableMetricCodes, getBillableMetricIds } from './shared/loadOptions';
 import { routeOperations } from './shared/router';
 
 export class Lago implements INodeType {
@@ -54,6 +55,7 @@ export class Lago implements INodeType {
 					{ name: 'Customer', value: 'customer' },
 					{ name: 'Event', value: 'event' },
 					{ name: 'Plan', value: 'plan' },
+					{ name: 'Plan Charge', value: 'planCharge' },
 					{ name: 'Subscription', value: 'subscription' },
 				],
 			},
@@ -61,6 +63,7 @@ export class Lago implements INodeType {
 			...customerDescription,
 			...eventDescription,
 			...planDescription,
+			...planChargeDescription,
 			...subscriptionDescription,
 		],
 	};
@@ -68,6 +71,7 @@ export class Lago implements INodeType {
 	methods = {
 		loadOptions: {
 			getBillableMetricCodes,
+			getBillableMetricIds,
 		},
 	};
 
