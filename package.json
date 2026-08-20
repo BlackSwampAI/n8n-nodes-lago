@@ -1,11 +1,18 @@
 {
-	"name": "n8n-nodes-community-template",
+	"name": "@blackswampai/n8n-nodes-lago",
 	"version": "0.1.0",
-	"description": "Reusable starter package for verified n8n community nodes",
+	"description": "n8n community node for Lago: subscription billing, usage metering, invoicing, prepaid credits, and billing lifecycle events",
 	"license": "MIT",
-	"homepage": "https://github.com/christopherjnelson/n8n-community-node-template#readme",
+	"homepage": "https://github.com/BlackSwampAI/n8n-nodes-lago#readme",
 	"keywords": [
-		"n8n-community-node-package"
+		"n8n-community-node-package",
+		"n8n",
+		"lago",
+		"billing",
+		"usage-based-billing",
+		"metering",
+		"subscriptions",
+		"invoicing"
 	],
 	"author": {
 		"name": "Christopher J. Nelson",
@@ -13,7 +20,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/christopherjnelson/n8n-community-node-template.git"
+		"url": "git+https://github.com/BlackSwampAI/n8n-nodes-lago.git"
 	},
 	"scripts": {
 		"build": "n8n-node build",
