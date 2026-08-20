@@ -18,7 +18,7 @@ export const evaluateExpressionFields: INodeProperties[] = [
 		required: true,
 		placeholder: 'e.g. round(event.properties.units * 2)',
 		description:
-			'Expression to evaluate. Address event properties as event.properties.&lt;key&gt; and the event time as event.timestamp — a bare property name is rejected. Supports ceil, floor, round and concat, plus the usual arithmetic operators.',
+			'Expression to evaluate. Address event properties as event.properties.&lt;key&gt; and the event time as event.timestamp — a bare property name is rejected. Supports ceil, floor, round and concat, plus the usual arithmetic operators. The result is returned exactly as Lago sends it, which for a number is a string such as "20.0".',
 		displayOptions: { show },
 	},
 	{
@@ -125,6 +125,8 @@ export const evaluateExpression: OperationHandler = async function (index) {
 	);
 
 	// Unwrapped to { value } so the result is directly usable in a downstream expression rather
-	// than nested two levels deep.
+	// than nested two levels deep. The value itself is passed through exactly as Lago sends it,
+	// which for a numeric result is a string such as "20.0" — converting it here would be
+	// guessing at what the caller wants from a validation helper.
 	return (response.expression_result ?? {}) as JsonObject;
 };

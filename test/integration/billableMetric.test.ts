@@ -149,6 +149,58 @@ describeLago('Billable Metric resource against a live Lago instance', () => {
 		});
 	});
 
+	// Pins the rule the conditional display is built on. Nothing in Lago's specification states
+	// it, so without this test the field visibility would rest on a one-off manual observation.
+	describe('recurring compatibility', () => {
+		it.each([
+			['sum_agg', true],
+			['unique_count_agg', true],
+			['weighted_sum_agg', true],
+			['count_agg', false],
+			['max_agg', false],
+			['latest_agg', false],
+		])('%s accepts recurring: %s', async (aggregation, accepted) => {
+			const code = `${runId}_rec_${aggregation}`;
+			const body: Record<string, unknown> = {
+				code,
+				name: code,
+				aggregation_type: aggregation,
+				recurring: true,
+			};
+			if (aggregation !== 'count_agg') body.field_name = 'v';
+			if (aggregation === 'weighted_sum_agg') body.weighted_interval = 'seconds';
+
+			const response = await fetch(`${lagoBaseUrl}/api/v1/billable_metrics`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${lagoApiKey}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ billable_metric: body }),
+			});
+
+			if (accepted) {
+				created.add(code);
+				expect(response.status).toBe(200);
+			} else {
+				expect(response.status).toBe(422);
+				expect(JSON.stringify(await response.json())).toMatch(
+					/not_compatible_with_aggregation_type/,
+				);
+			}
+		});
+
+		it('creates a recurring sum metric through the node', async () => {
+			const code = `${runId}_recurring`;
+			const [item] = await createMetric(code, {
+				aggregationType: 'sum_agg',
+				fieldName: 'seats',
+				recurring: true,
+			});
+			expect(item.json.recurring).toBe(true);
+		});
+	});
+
 	describe('evaluate expression', () => {
 		// The operation that turns an opaque metering failure into an inline check.
 		it('evaluates an arithmetic expression against a sample event', async () => {
@@ -161,6 +213,10 @@ describeLago('Billable Metric resource against a live Lago instance', () => {
 			});
 
 			expect(Number(item.json.value)).toBe(20);
+			// Passed through exactly as Lago sends it: a numeric result arrives as a string, and
+			// converting it here would be guessing at what the caller wants.
+			expect(typeof item.json.value).toBe('string');
+			expect(item.json.value).toBe('20.0');
 		});
 
 		// n8n's key/value input is string-typed, so without coercion "10" * 2 would behave as

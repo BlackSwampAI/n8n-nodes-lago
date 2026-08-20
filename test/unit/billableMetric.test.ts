@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { Lago } from '../../nodes/Lago/Lago.node';
 import {
 	AGGREGATIONS_NEEDING_FIELD,
+	AGGREGATIONS_SUPPORTING_RECURRING,
 	AGGREGATION_TYPES,
 	buildFilters,
 } from '../../nodes/Lago/resources/billableMetric/fields';
@@ -46,6 +47,53 @@ describe('aggregation types', () => {
 		for (const type of AGGREGATION_TYPES) {
 			expect(type.description, type.value).toBeTruthy();
 		}
+	});
+});
+
+describe('recurring compatibility', () => {
+	// Lago answers 422 recurring: not_compatible_with_aggregation_type for the other three.
+	// Established against a live server, not from the specification, which does not say so.
+	it('allows recurring only on the three aggregations Lago accepts it for', () => {
+		expect([...AGGREGATIONS_SUPPORTING_RECURRING].sort()).toEqual([
+			'sum_agg',
+			'unique_count_agg',
+			'weighted_sum_agg',
+		]);
+	});
+
+	it('excludes every aggregation Lago rejects it for', () => {
+		for (const rejected of ['count_agg', 'max_agg', 'latest_agg']) {
+			expect(AGGREGATIONS_SUPPORTING_RECURRING, rejected).not.toContain(rejected);
+		}
+	});
+
+	it('shows Recurring on create only for those aggregations', () => {
+		expect(fieldFor('recurring', 'create')?.displayOptions?.show?.aggregationType).toEqual(
+			AGGREGATIONS_SUPPORTING_RECURRING,
+		);
+	});
+
+	it('does not leave a second Recurring in the create collection', () => {
+		const names = (
+			(fieldFor('additionalFields', 'create')?.options ?? []) as Array<{
+				name: string;
+			}>
+		).map((option) => option.name);
+		expect(names).not.toContain('recurring');
+	});
+
+	// Update addresses a metric by code without knowing its aggregation type, so the field cannot
+	// be shown conditionally there. It stays in the collection with the rule spelled out.
+	it('keeps Recurring in the update collection and names the compatible aggregations', () => {
+		const recurring = (
+			(fieldFor('additionalFields', 'update')?.options ?? []) as Array<{
+				name: string;
+				description?: string;
+			}>
+		).find((option) => option.name === 'recurring');
+
+		expect(recurring).toBeDefined();
+		expect(recurring?.description).toMatch(/Sum, Unique Count and Weighted Sum/);
 	});
 });
 
