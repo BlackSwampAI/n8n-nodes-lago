@@ -7,8 +7,10 @@ import {
 } from 'n8n-workflow';
 import { billableMetricDescription } from './resources/billableMetric';
 import { customerDescription } from './resources/customer';
+import { eventDescription } from './resources/event';
 import { planDescription } from './resources/plan';
 import { subscriptionDescription } from './resources/subscription';
+import { getBillableMetricCodes } from './shared/loadOptions';
 import { routeOperations } from './shared/router';
 
 export class Lago implements INodeType {
@@ -50,15 +52,23 @@ export class Lago implements INodeType {
 				options: [
 					{ name: 'Billable Metric', value: 'billableMetric' },
 					{ name: 'Customer', value: 'customer' },
+					{ name: 'Event', value: 'event' },
 					{ name: 'Plan', value: 'plan' },
 					{ name: 'Subscription', value: 'subscription' },
 				],
 			},
 			...billableMetricDescription,
 			...customerDescription,
+			...eventDescription,
 			...planDescription,
 			...subscriptionDescription,
 		],
+	};
+
+	methods = {
+		loadOptions: {
+			getBillableMetricCodes,
+		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {

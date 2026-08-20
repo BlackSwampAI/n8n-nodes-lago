@@ -15,6 +15,8 @@ export interface ContextOptions {
 	baseUrl: string;
 	apiKey: string;
 	continueOnFail?: boolean;
+	/** Value returned by `getExecutionId`, which handlers use to derive idempotency keys. */
+	executionId?: string;
 }
 
 const node: INode = {
@@ -86,6 +88,7 @@ export function createExecuteContext(options: ContextOptions): IExecuteFunctions
 	const context = {
 		getInputData: () => items,
 		getNode: () => node,
+		getExecutionId: () => options.executionId ?? 'test-execution',
 		continueOnFail: () => options.continueOnFail ?? false,
 		getCredentials: async () => ({ baseUrl: options.baseUrl, apiKey: options.apiKey }),
 		getNodeParameter: (name: string, _index?: number, fallback?: unknown) => {

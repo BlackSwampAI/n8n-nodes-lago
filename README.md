@@ -28,11 +28,19 @@ The **Lago** node currently supports:
 | --------------- | ---------------------------------------------------------- |
 | Billable Metric | Create, Get, Get Many, Update, Delete, Evaluate Expression |
 | Customer        | Create or Update, Get, Get Many, Delete                    |
+| Event           | Send, Send Batch, Get, Get Many, Estimate Fees             |
 | Plan            | Create, Get, Get Many, Update, Delete                      |
 | Subscription    | Create, Get, Get Many, Update, Terminate                   |
 
-Further resources land per milestone: Plan Charge, Event, Invoice, Credit Note, Coupon,
+Further resources land per milestone: Plan Charge, Invoice, Credit Note, Coupon,
 Wallet, Wallet Transaction and Webhook Endpoint.
+
+Usage events are the metering half of the integration. The **Billable Metric Code** is chosen
+from the metrics defined in Lago rather than typed, because Lago accepts an event whose code
+matches no active metric, stores it, and then never bills it — there is no error to notice.
+Events are also aggregated asynchronously, so usage does not reflect a send immediately, and
+Lago deduplicates on the transaction ID, which the node derives from the execution so an n8n
+retry cannot double-bill.
 
 Subscriptions are **terminated, not deleted** — the record is kept with a `terminated` status.
 Note that Get Many returns only `active` subscriptions unless a status filter is set, and that a
