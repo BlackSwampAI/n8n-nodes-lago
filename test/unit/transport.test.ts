@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
+import { NodeApiError } from 'n8n-workflow';
+import { lagoApiRequest } from '../../nodes/Lago/shared/transport';
 import {
 	buildRequestOptions,
 	cleanQuery,
@@ -183,5 +185,80 @@ describe('collectAll', () => {
 			.mockResolvedValueOnce({ items: [{ id: 2 }], nextPage: undefined });
 		await collectAll(fetchPage, { returnAll: true, limit: 0 });
 		expect(fetchPage).toHaveBeenNthCalledWith(2, { page: 7, perPage: MAX_PAGE_SIZE });
+	});
+});
+
+describe('lagoApiRequest error reporting', () => {
+	const node = {
+		id: 'n',
+		name: 'Lago',
+		type: 't',
+		typeVersion: 1,
+		position: [0, 0],
+		parameters: {},
+	};
+
+	function contextThrowing(error: unknown) {
+		return {
+			getNode: () => node,
+			getCredentials: async () => ({ baseUrl: 'https://api.getlago.com', apiKey: 'k' }),
+			helpers: {
+				httpRequestWithAuthentication: async () => {
+					throw error;
+				},
+			},
+		};
+	}
+
+	/** The shape n8n's helper throws: a NodeApiError keeping the transport error as `cause`. */
+	function n8nWrapped(status: number, body: unknown) {
+		const inner = Object.assign(new Error(`Request failed with status code ${status}`), {
+			isAxiosError: true,
+			response: { status, data: body },
+		});
+		return new NodeApiError(node, inner as never);
+	}
+
+	// The wrapper here is built from the same NodeApiError class the transport uses, which is what
+	// a real install looks like: node and host share one copy of n8n-workflow. Re-wrapping such an
+	// error returns it unchanged and discards our message, so this fails if the transport stops
+	// unwrapping. Local development hides the bug, because the project and n8n resolve separate
+	// copies and the instanceof check misses.
+	it('reports our message rather than the generic n8n wording', async () => {
+		const error = n8nWrapped(404, { status: 404, error: 'Not Found', code: 'customer_not_found' });
+		const context = contextThrowing(error);
+
+		await expect(
+			lagoApiRequest.call(context as never, 'GET', '/customers/acme', {
+				resource: 'Customer',
+				resourceId: 'acme',
+			}),
+		).rejects.toThrow('Customer acme was not found');
+	});
+
+	it('carries the Lago validation wording out of a wrapped 422', async () => {
+		const error = n8nWrapped(422, {
+			status: 422,
+			code: 'validation_errors',
+			error_details: { external_id: ['value_is_mandatory'] },
+		});
+
+		await expect(
+			lagoApiRequest.call(contextThrowing(error) as never, 'POST', '/customers', {
+				resource: 'Customer',
+			}),
+		).rejects.toThrow('external_id: value_is_mandatory');
+	});
+
+	it('reports a malformed base URL as configuration, not as a failed request', async () => {
+		const context = {
+			getNode: () => node,
+			getCredentials: async () => ({ baseUrl: 'not-a-url', apiKey: 'k' }),
+			helpers: { httpRequestWithAuthentication: async () => ({}) },
+		};
+
+		await expect(lagoApiRequest.call(context as never, 'GET', '/customers')).rejects.toThrow(
+			/must start with http/,
+		);
 	});
 });

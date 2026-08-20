@@ -8,7 +8,7 @@ import {
 	type ILoadOptionsFunctions,
 	type JsonObject,
 } from 'n8n-workflow';
-import { describeLagoError } from './errors';
+import { describeLagoError, rootHttpError } from './errors';
 
 export const LAGO_CREDENTIAL = 'lagoApi';
 
@@ -200,10 +200,27 @@ export async function lagoApiRequest(
 			resourceId: options.resourceId,
 			baseUrl: normalizeBaseUrl(baseUrl),
 		});
-		throw new NodeApiError(this.getNode(), error as JsonObject, {
-			message: described.message,
+
+		// Two things here are deliberate, and both were found by running the node in n8n rather
+		// than by any test.
+		//
+		// The underlying transport error is passed on, not the NodeApiError that n8n's request
+		// helper has already wrapped it in. NodeApiError's constructor returns its argument
+		// unchanged when handed one of its own instances, which would discard everything below.
+		// That only bites in a real install, where the node and n8n share one copy of
+		// n8n-workflow so the instanceof check matches; in local development the two resolve
+		// separate copies and the re-wrap appears to work.
+		//
+		// The message is then assigned rather than passed as an option, because NodeApiError
+		// overwrites the message it was given whenever the status code is one it recognises —
+		// 401, 404 and 422 among them — with generic wording such as "The resource you are
+		// requesting could not be found". Assigning afterwards is what makes a message naming the
+		// resource, or Lago's own validation wording, actually reach the user.
+		const apiError = new NodeApiError(this.getNode(), rootHttpError(error) as JsonObject, {
 			description: described.description,
 		});
+		apiError.message = described.message;
+		throw apiError;
 	}
 }
 

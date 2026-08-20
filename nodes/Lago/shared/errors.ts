@@ -15,16 +15,52 @@ interface ErrorLike {
 	response?: { status?: number; body?: unknown; data?: unknown; headers?: unknown };
 	body?: unknown;
 	cause?: unknown;
+	/** Some n8n versions copy the parsed response body here instead of keeping the cause. */
+	context?: { data?: unknown };
+}
+
+/** The response body carried by one link in an error chain, wherever that version keeps it. */
+function bodyAt(error: ErrorLike | undefined): unknown {
+	if (!error) return undefined;
+	return error.response?.body ?? error.response?.data ?? error.body ?? error.context?.data;
+}
+
+/**
+ * Walks the `cause` chain for the link that carries the HTTP response.
+ *
+ * n8n's `httpRequestWithAuthentication` wraps every failure in a `NodeApiError` before node code
+ * sees it, so reading `error.response` directly finds nothing and Lago's `code` and
+ * `error_details` — the only actionable parts of its errors — are silently lost.
+ *
+ * Where the original ends up depends on the n8n version: some keep it as `cause`, others discard
+ * the cause and copy the parsed body to `context.data`. Both are checked at every level rather
+ * than assuming one, because a community node runs against whichever version the user has.
+ *
+ * The depth limit guards against a self-referencing chain; two levels is the realistic maximum.
+ */
+export function rootHttpError(error: unknown): unknown {
+	let current = error as ErrorLike | undefined;
+	for (let depth = 0; current && depth < 5; depth++) {
+		if (bodyAt(current) !== undefined) return current;
+		current = current.cause as ErrorLike | undefined;
+	}
+	return error;
 }
 
 function statusOf(error: ErrorLike): number | undefined {
-	const raw = error.statusCode ?? error.response?.status ?? error.httpCode;
+	const root = (rootHttpError(error) ?? {}) as ErrorLike;
+	const raw =
+		error.statusCode ??
+		error.response?.status ??
+		error.httpCode ??
+		root.statusCode ??
+		root.response?.status;
 	const parsed = typeof raw === 'string' ? Number.parseInt(raw, 10) : raw;
 	return Number.isFinite(parsed) ? (parsed as number) : undefined;
 }
 
 function bodyOf(error: ErrorLike): unknown {
-	return error.response?.body ?? error.response?.data ?? error.body;
+	return bodyAt((rootHttpError(error) ?? {}) as ErrorLike);
 }
 
 function asObject(body: unknown): JsonObject | undefined {
@@ -99,7 +135,8 @@ function lagoCode(body: unknown): string | undefined {
 
 /** Seconds until the rate-limit window resets, when the response says so. */
 function rateLimitReset(error: ErrorLike): string | undefined {
-	const headers = error.response?.headers;
+	const root = (rootHttpError(error) ?? {}) as ErrorLike;
+	const headers = root.response?.headers ?? error.response?.headers;
 	if (!headers || typeof headers !== 'object') return undefined;
 	const value = (headers as Record<string, unknown>)['x-ratelimit-reset'];
 	return value === undefined || value === null ? undefined : String(value);
