@@ -171,6 +171,22 @@ describe('describeLagoError through n8n wrapping', () => {
 });
 
 describe('describeLagoError', () => {
+	// Lago reuses 403 for premium gating, distinguished only by the code. Reporting that as a
+	// credential problem sends the user to fix something that is not broken.
+	it('reports a premium gate as a licence problem, not a credential one', () => {
+		const described = describeLagoError(
+			httpError(403, { status: 403, error: 'Forbidden', code: 'feature_unavailable' }),
+			{ resource: 'Credit Note' },
+		);
+		expect(described.message).toBe('Credit Note requires a Lago premium licence');
+		expect(described.description).toMatch(/free edition/i);
+	});
+
+	it('still reports a genuine 403 as a credential problem', () => {
+		const described = describeLagoError(httpError(403, { status: 403, error: 'Forbidden' }));
+		expect(described.message).toBe('Lago rejected the API key');
+	});
+
 	it('names the credential for a rejected key', () => {
 		const described = describeLagoError(httpError(401, { status: 401, error: 'Unauthorized' }));
 		expect(described.message).toBe('Lago rejected the API key');

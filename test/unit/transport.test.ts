@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { NodeApiError } from 'n8n-workflow';
-import { lagoApiRequest } from '../../nodes/Lago/shared/transport';
 import {
+	lagoApiRequest,
 	buildRequestOptions,
 	cleanQuery,
 	collectAll,

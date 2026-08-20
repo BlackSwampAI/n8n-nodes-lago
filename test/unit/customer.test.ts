@@ -24,6 +24,23 @@ describe('Customer resource', () => {
 	});
 });
 
+describe('premium fields', () => {
+	// Accepted with a 200 and then stored as null on the free edition, so the description is the
+	// only warning a workflow author will ever get.
+	it('warns that a customer timezone is premium and silently ignored', () => {
+		const timezone = (
+			(customerDescription.find(
+				(property) =>
+					property.name === 'additionalFields' &&
+					property.displayOptions?.show?.operation?.includes('createOrUpdate'),
+			)?.options ?? []) as Array<{ name: string; description?: string }>
+		).find((option) => option.name === 'timezone');
+
+		expect(timezone?.description).toMatch(/premium licence/i);
+		expect(timezone?.description).toMatch(/silently ignores/i);
+	});
+});
+
 describe('Customer fields', () => {
 	it('gives every option-typed field a default that is one of its options', () => {
 		for (const property of customerDescription) {

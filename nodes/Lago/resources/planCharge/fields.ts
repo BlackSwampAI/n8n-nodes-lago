@@ -290,10 +290,11 @@ export function chargeFields(operation: 'create' | 'update'): INodeProperties[] 
 					name: 'min_amount_cents',
 					type: 'number',
 					default: 0,
-					// Unlike every other money field on a charge, this one is in cents, matching the
-					// plan rather than the charge properties.
+					// Two traps in one field. It is in cents, unlike every other money field on a
+					// charge; and the free edition accepts it and stores zero, with no error, so
+					// nothing signals that the floor was never applied.
 					description:
-						'Spend floor for the charge each period, in the currency’s smallest unit. Note this is in cents, unlike the amounts above.',
+						'Spend floor for the charge each period, in the currency’s smallest unit. Note this is in cents, unlike the amounts above. Requires a Lago premium licence — the free edition accepts the value and silently stores zero.',
 				},
 				{
 					displayName: 'Pay in Advance',
@@ -307,7 +308,10 @@ export function chargeFields(operation: 'create' | 'update'): INodeProperties[] 
 					name: 'prorated',
 					type: 'boolean',
 					default: false,
-					description: 'Whether the charge is prorated over a partial billing period',
+					// Lago answers 422 prorated: invalid_billable_metric_or_charge_model unless the
+					// metric is recurring, which the field name gives no hint of.
+					description:
+						'Whether the charge is prorated over a partial billing period. Only valid when the billable metric is recurring; Lago rejects the charge otherwise.',
 				},
 			],
 		},

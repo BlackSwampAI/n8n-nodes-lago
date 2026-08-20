@@ -216,6 +216,26 @@ describeLago('Plan Charge resource against a live Lago instance', () => {
 			expect(JSON.stringify(await response.json())).toMatch(/invalid_amount/);
 		});
 
+		// Not refused, which is worse: the free edition accepts the value and stores zero, so a
+		// spend floor silently never applies. Only the field description can warn anyone.
+		it('silently stores zero for a premium minimum amount', async () => {
+			const [item] = await addCharge(`${runId}_minimum`, 'standard', {
+				amount: '1',
+				additionalFields: { min_amount_cents: 500 },
+			});
+			expect(item.json.min_amount_cents).toBe(0);
+		});
+
+		// Lago names neither the metric nor the requirement in the field, only in the error.
+		it('rejects prorated unless the billable metric is recurring', async () => {
+			await expect(
+				addCharge(`${runId}_prorated`, 'standard', {
+					amount: '1',
+					additionalFields: { prorated: true },
+				}),
+			).rejects.toThrow(/invalid_billable_metric_or_charge_model/);
+		});
+
 		it('rejects a charge with no code, which is why Charge Code is required', async () => {
 			const response = await fetch(`${lagoBaseUrl}/api/v1/plans/${planCode}/charges`, {
 				method: 'POST',

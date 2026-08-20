@@ -5,6 +5,7 @@ import {
 	type INodeExecutionData,
 } from 'n8n-workflow';
 import { billableMetricOperations } from '../resources/billableMetric';
+import { creditNoteOperations } from '../resources/creditNote';
 import { customerOperations } from '../resources/customer';
 import { eventOperations } from '../resources/event';
 import { invoiceOperations } from '../resources/invoice';
@@ -21,6 +22,7 @@ import type { OperationHandlers } from './types';
  */
 export const resources: Record<string, OperationHandlers> = {
 	billableMetric: billableMetricOperations,
+	creditNote: creditNoteOperations,
 	customer: customerOperations,
 	event: eventOperations,
 	invoice: invoiceOperations,

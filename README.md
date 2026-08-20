@@ -27,6 +27,7 @@ The **Lago** node currently supports:
 | Resource        | Operations                                                                     |
 | --------------- | ------------------------------------------------------------------------------ |
 | Billable Metric | Create, Get, Get Many, Update, Delete, Evaluate Expression                     |
+| Credit Note     | Create, Estimate, Get, Get Many, Download, Void                                |
 | Customer        | Create or Update, Get, Get Many, Delete                                        |
 | Event           | Send, Send Batch, Get, Get Many, Estimate Fees                                 |
 | Invoice         | Create One-Off, Get, Get Many, Update, Finalize, Void, Download, Retry Payment |
@@ -34,8 +35,13 @@ The **Lago** node currently supports:
 | Plan Charge     | Create, Get, Get Many, Update, Delete                                          |
 | Subscription    | Create, Get, Get Many, Update, Terminate                                       |
 
-Further resources land per milestone: Credit Note, Coupon,
+Further resources land per milestone: Coupon,
 Wallet, Wallet Transaction and Webhook Endpoint.
+
+Credit note **Create** and **Estimate** require a Lago premium licence and are marked as such;
+reading, downloading and voiding credit notes works on the free edition. Lago answers 403 for a
+premium gate as well as for a rejected key, so the node distinguishes them and reports a licence
+problem rather than sending you to check a working credential.
 
 Invoices do not follow ordinary CRUD. A one-off invoice is issued **already finalized**, so
 there is no draft to finalize afterwards; finalizing an invoice that is already finalized is

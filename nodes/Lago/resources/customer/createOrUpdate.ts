@@ -130,8 +130,10 @@ export const createOrUpdateFields: INodeProperties[] = [
 				type: 'string',
 				default: '',
 				placeholder: 'e.g. Europe/Paris',
+				// Accepted with a 200 and then stored as null on the free edition, so nothing
+				// signals that the customer stayed on the organization's timezone.
 				description:
-					'IANA timezone name. Setting a customer-specific timezone requires a Lago premium licence.',
+					'IANA timezone name. Requires a Lago premium licence — the free edition accepts the value and silently ignores it, leaving the customer on the organization’s timezone.',
 			},
 			{
 				displayName: 'URL',

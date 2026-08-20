@@ -6,6 +6,7 @@ import {
 	type INodeTypeDescription,
 } from 'n8n-workflow';
 import { billableMetricDescription } from './resources/billableMetric';
+import { creditNoteDescription } from './resources/creditNote';
 import { customerDescription } from './resources/customer';
 import { eventDescription } from './resources/event';
 import { invoiceDescription } from './resources/invoice';
@@ -53,6 +54,7 @@ export class Lago implements INodeType {
 				default: 'customer',
 				options: [
 					{ name: 'Billable Metric', value: 'billableMetric' },
+					{ name: 'Credit Note', value: 'creditNote' },
 					{ name: 'Customer', value: 'customer' },
 					{ name: 'Event', value: 'event' },
 					{ name: 'Invoice', value: 'invoice' },
@@ -62,6 +64,7 @@ export class Lago implements INodeType {
 				],
 			},
 			...billableMetricDescription,
+			...creditNoteDescription,
 			...customerDescription,
 			...eventDescription,
 			...invoiceDescription,
