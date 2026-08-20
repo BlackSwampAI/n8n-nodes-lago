@@ -207,15 +207,21 @@ export async function lagoApiRequest(
 	}
 }
 
-/** Issues requests against a Lago list endpoint until the requested records are collected. */
+/**
+ * Issues requests against a Lago list endpoint until the requested records are collected.
+ *
+ * Takes its context as an argument rather than through `this`, unlike {@link lagoApiRequest}.
+ * A generic function's type parameter cannot be inferred through `Function.prototype.call`, so
+ * the `this`-bound form would force every caller into an explicit cast or a type-argument list.
+ */
 export async function lagoApiRequestAllItems<T = JsonObject>(
-	this: LagoContext,
+	context: LagoContext,
 	path: string,
 	collectionKey: string,
 	options: CollectOptions & { query?: IDataObject; resource?: string },
 ): Promise<T[]> {
 	return collectAll<T>(async ({ page, perPage }) => {
-		const response = await lagoApiRequest.call(this, 'GET', path, {
+		const response = await lagoApiRequest.call(context, 'GET', path, {
 			query: { ...options.query, page, per_page: perPage },
 			resource: options.resource,
 		});

@@ -22,26 +22,18 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Operations
 
-The **Lago** node is planned to support these resources:
+The **Lago** node currently supports:
 
-| Resource           | Operations                                                              |
-| ------------------ | ----------------------------------------------------------------------- |
-| Customer           | Create or Update, Get, Get Many, Delete                                 |
-| Billable Metric    | Create, Get, Get Many, Update, Delete, Evaluate Expression              |
-| Plan               | Create, Get, Get Many, Update, Delete                                   |
-| Plan Charge        | Create, Get, Get Many, Update, Delete                                   |
-| Subscription       | Create, Get, Get Many, Update, Terminate                                |
-| Event              | Send, Send Batch, Get, Get Many, Estimate Fees                          |
-| Invoice            | Get, Get Many, Update, Finalize, Void, Refresh, Retry Payment, Download |
-| Credit Note        | Create, Get, Get Many                                                   |
-| Coupon             | Create, Get, Get Many, Update, Delete, Apply to Customer                |
-| Wallet             | Create, Get, Get Many, Update, Terminate                                |
-| Wallet Transaction | Create, Get Many                                                        |
-| Webhook Endpoint   | Create, Get, Get Many, Update, Delete                                   |
+| Resource | Operations                              |
+| -------- | --------------------------------------- |
+| Customer | Create or Update, Get, Get Many, Delete |
+
+Further resources land per milestone: Billable Metric, Plan, Subscription, Event, Invoice,
+Credit Note, Coupon, Wallet, Wallet Transaction and Webhook Endpoint.
 
 Customer has no update endpoint in the Lago API — `POST /customers` upserts on the external ID — so the node exposes a single **Create or Update** operation rather than implying semantics the API does not have.
 
-The **Lago Trigger** node starts a workflow from Lago's billing webhooks, covering the event catalogue across customers, subscriptions, invoices, payments, wallets, plans, billable metrics, credit notes, fees, and alerts.
+A **Lago Trigger** node is planned, starting workflows from Lago's billing webhooks across the full event catalogue — customers, subscriptions, invoices, payments, wallets, plans, billable metrics, credit notes, fees and alerts.
 
 ## Credentials
 
