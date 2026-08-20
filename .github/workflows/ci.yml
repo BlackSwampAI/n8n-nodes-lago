@@ -12,7 +12,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  # Fast feedback: everything that needs no database and no containers.
+  check:
+    name: Lint, typecheck, unit tests, build
     runs-on: ubuntu-latest
 
     steps:
@@ -27,11 +29,54 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check formatting
+        run: npx prettier --check .
+
       - name: Run lint
         run: npm run lint
 
+      - name: Run typecheck
+        run: npm run typecheck
+
       - name: Run unit tests
-        run: npm test
+        run: npm run test:unit
 
       - name: Run build
         run: npm run build
+
+      - name: Audit release configuration
+        run: npm run release:check
+
+  # Integration tests run against a real Lago instance, brought up the same way a developer
+  # does it locally. Split from `check` so a Lago or Docker problem is never mistaken for a
+  # problem with this package.
+  integration:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start Lago and seed an organization
+        run: npm run lago:up
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+      - name: Show Lago logs on failure
+        if: failure()
+        run: docker compose --env-file .env.lago logs --tail 200
+
+      - name: Tear down
+        if: always()
+        run: npm run lago:down

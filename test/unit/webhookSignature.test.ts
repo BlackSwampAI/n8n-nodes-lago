@@ -6,7 +6,7 @@ import {
 	verifyHmacSignature,
 	verifyJwtSignature,
 	verifyLagoWebhookSignature,
-} from './webhookSignature';
+} from '../../nodes/Lago/shared/webhookSignature';
 
 const ISSUER = 'https://api.getlago.com';
 const HMAC_KEY = 'organization-hmac-key';
