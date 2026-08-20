@@ -5,6 +5,7 @@ import {
 	type INodeType,
 	type INodeTypeDescription,
 } from 'n8n-workflow';
+import { billableMetricDescription } from './resources/billableMetric';
 import { customerDescription } from './resources/customer';
 import { routeOperations } from './shared/router';
 
@@ -44,8 +45,12 @@ export class Lago implements INodeType {
 				type: 'options',
 				noDataExpression: true,
 				default: 'customer',
-				options: [{ name: 'Customer', value: 'customer' }],
+				options: [
+					{ name: 'Billable Metric', value: 'billableMetric' },
+					{ name: 'Customer', value: 'customer' },
+				],
 			},
+			...billableMetricDescription,
 			...customerDescription,
 		],
 	};
