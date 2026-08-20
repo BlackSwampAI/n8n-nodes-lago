@@ -21,8 +21,10 @@ const packageJson = JSON.parse(read('package.json'));
 const publishWorkflow = read('.github/workflows/publish.yml');
 const readme = read('README.md');
 
-if (!/^n8n-nodes-[a-z0-9][a-z0-9._-]*$/.test(packageJson.name ?? '')) {
-	fail('package.json name must be the final lowercase n8n-nodes-* package name');
+// n8n accepts either `n8n-nodes-*` or `@scope/n8n-nodes-*` for community nodes.
+// npm package names are lowercase, scope included.
+if (!/^(@[a-z0-9][a-z0-9._-]*\/)?n8n-nodes-[a-z0-9][a-z0-9._-]*$/.test(packageJson.name ?? '')) {
+	fail('package.json name must be the final lowercase n8n-nodes-* or @scope/n8n-nodes-* package name');
 }
 
 for (const [label, value] of [
