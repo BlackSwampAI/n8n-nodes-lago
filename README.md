@@ -30,9 +30,10 @@ The **Lago** node currently supports:
 | Customer        | Create or Update, Get, Get Many, Delete                    |
 | Event           | Send, Send Batch, Get, Get Many, Estimate Fees             |
 | Plan            | Create, Get, Get Many, Update, Delete                      |
+| Plan Charge     | Create, Get, Get Many, Update, Delete                      |
 | Subscription    | Create, Get, Get Many, Update, Terminate                   |
 
-Further resources land per milestone: Plan Charge, Invoice, Credit Note, Coupon,
+Further resources land per milestone: Invoice, Credit Note, Coupon,
 Wallet, Wallet Transaction and Webhook Endpoint.
 
 Usage events are the metering half of the integration. The **Billable Metric Code** is chosen
@@ -48,6 +49,11 @@ terminated subscription reports as not found by Get while still appearing in Get
 Create again with the same external ID and a different plan performs an **upgrade or downgrade**:
 an upgrade replaces the subscription immediately, while a downgrade is queued as `pending` until
 the period ends.
+
+Plan charges price a billable metric on a plan, and every charge model — standard, package,
+percentage, graduated, volume and dynamic — is offered as real fields rather than raw JSON.
+Charge amounts are **decimal strings** (`"0.01"`), unlike plan amounts; Lago rejects a plain
+number. Graduated Percentage requires a Lago premium licence.
 
 Plan amounts are in the currency's **smallest unit** — `10000` is 100.00, not 10000.00. Plan
 deletion is processed asynchronously, so a deleted plan stays readable for a moment afterwards.
