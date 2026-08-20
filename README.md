@@ -28,9 +28,13 @@ The **Lago** node currently supports:
 | --------------- | ---------------------------------------------------------- |
 | Billable Metric | Create, Get, Get Many, Update, Delete, Evaluate Expression |
 | Customer        | Create or Update, Get, Get Many, Delete                    |
+| Plan            | Create, Get, Get Many, Update, Delete                      |
 
-Further resources land per milestone: Plan, Subscription, Event, Invoice, Credit Note, Coupon,
+Further resources land per milestone: Plan Charge, Subscription, Event, Invoice, Credit Note, Coupon,
 Wallet, Wallet Transaction and Webhook Endpoint.
+
+Plan amounts are in the currency's **smallest unit** — `10000` is 100.00, not 10000.00. Plan
+deletion is processed asynchronously, so a deleted plan stays readable for a moment afterwards.
 
 Billable metric **expressions** address event properties as `event.properties.<key>` and the
 event time as `event.timestamp`. The **Evaluate Expression** operation checks one against a
