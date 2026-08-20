@@ -24,20 +24,20 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 The **Lago** node is planned to support these resources:
 
-| Resource | Operations |
-| --- | --- |
-| Customer | Create or Update, Get, Get Many, Delete |
-| Billable Metric | Create, Get, Get Many, Update, Delete, Evaluate Expression |
-| Plan | Create, Get, Get Many, Update, Delete |
-| Plan Charge | Create, Get, Get Many, Update, Delete |
-| Subscription | Create, Get, Get Many, Update, Terminate |
-| Event | Send, Send Batch, Get, Get Many, Estimate Fees |
-| Invoice | Get, Get Many, Update, Finalize, Void, Refresh, Retry Payment, Download |
-| Credit Note | Create, Get, Get Many |
-| Coupon | Create, Get, Get Many, Update, Delete, Apply to Customer |
-| Wallet | Create, Get, Get Many, Update, Terminate |
-| Wallet Transaction | Create, Get Many |
-| Webhook Endpoint | Create, Get, Get Many, Update, Delete |
+| Resource           | Operations                                                              |
+| ------------------ | ----------------------------------------------------------------------- |
+| Customer           | Create or Update, Get, Get Many, Delete                                 |
+| Billable Metric    | Create, Get, Get Many, Update, Delete, Evaluate Expression              |
+| Plan               | Create, Get, Get Many, Update, Delete                                   |
+| Plan Charge        | Create, Get, Get Many, Update, Delete                                   |
+| Subscription       | Create, Get, Get Many, Update, Terminate                                |
+| Event              | Send, Send Batch, Get, Get Many, Estimate Fees                          |
+| Invoice            | Get, Get Many, Update, Finalize, Void, Refresh, Retry Payment, Download |
+| Credit Note        | Create, Get, Get Many                                                   |
+| Coupon             | Create, Get, Get Many, Update, Delete, Apply to Customer                |
+| Wallet             | Create, Get, Get Many, Update, Terminate                                |
+| Wallet Transaction | Create, Get Many                                                        |
+| Webhook Endpoint   | Create, Get, Get Many, Update, Delete                                   |
 
 Customer has no update endpoint in the Lago API — `POST /customers` upserts on the external ID — so the node exposes a single **Create or Update** operation rather than implying semantics the API does not have.
 
@@ -52,11 +52,11 @@ You need a Lago API key. Either:
 
 The credential takes a **Base URL** and an **API Key**. Self-hosted instances are a first-class target: set the Base URL to your own instance instead of the default.
 
-| Deployment | Base URL |
-| --- | --- |
-| Lago Cloud (US) | `https://api.getlago.com` |
+| Deployment      | Base URL                     |
+| --------------- | ---------------------------- |
+| Lago Cloud (US) | `https://api.getlago.com`    |
 | Lago Cloud (EU) | `https://api.eu.getlago.com` |
-| Self-hosted | your instance URL |
+| Self-hosted     | your instance URL            |
 
 Lago authenticates with a bearer token, and the credential test verifies that the Base URL is reachable and the API key is accepted.
 
@@ -89,10 +89,10 @@ Event sending is idempotent on the transaction ID, and Lago deduplicates on it, 
 
 ## Resources
 
-* [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
-* [Lago documentation](https://docs.getlago.com/)
-* [Lago API reference](https://docs.getlago.com/api-reference/intro)
-* [Lago webhook reference](https://docs.getlago.com/api-reference/webhooks/format---signature)
+- [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
+- [Lago documentation](https://docs.getlago.com/)
+- [Lago API reference](https://docs.getlago.com/api-reference/intro)
+- [Lago webhook reference](https://docs.getlago.com/api-reference/webhooks/format---signature)
 
 ## Version history
 
