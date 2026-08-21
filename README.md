@@ -14,7 +14,7 @@ Lago is an open-source billing and metering platform for subscription, usage-bas
 [Resources](#resources)
 [Version history](#version-history)
 
-> **Pre-release.** This package is under active development and has not been published yet. The operations below describe the planned 0.1.0 surface.
+> **Pre-release.** This package is under active development and has not been published yet.
 
 ## Installation
 
@@ -39,7 +39,12 @@ The **Lago** node currently supports:
 | Wallet Transaction | Create, Get Many                                                                                 |
 | Webhook Endpoint   | Create, Get, Get Many, Update, Delete                                                            |
 
-A **Lago Trigger** lands next, starting workflows from these webhooks.
+The **Lago Trigger** node starts a workflow when Lago sends a billing event. It registers a
+webhook endpoint in Lago when the workflow is activated, reusing an existing one for the same URL
+rather than adding another, and removes it on deactivation. Every delivery is verified before the
+workflow runs — with JWT by default, whose key is fetched automatically, or HMAC using the key
+set on the credential. Lago retries a delivery up to three times, so repeats are recognised by
+their delivery key and skipped.
 
 Webhook endpoints register where Lago sends events. Event names are **dotted**
 (`invoice.created`), not underscored as the OpenAPI specification shows them, and the node
@@ -93,7 +98,7 @@ sample event, so a metering expression can be validated before any usage depends
 
 Customer has no update endpoint in the Lago API — `POST /customers` upserts on the external ID — so the node exposes a single **Create or Update** operation rather than implying semantics the API does not have.
 
-A **Lago Trigger** node is planned, starting workflows from Lago's billing webhooks across the full event catalogue — customers, subscriptions, invoices, payments, wallets, plans, billable metrics, credit notes, fees and alerts.
+The **Lago Trigger** node covers the full event catalogue — customers, subscriptions, invoices, payments, wallets, plans, billable metrics, credit notes, fees and alerts.
 
 ## Credentials
 
