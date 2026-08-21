@@ -52,6 +52,17 @@ export const eventDescription: INodeProperties[] = [
 			},
 		],
 	},
+	{
+		// Shown in the panel rather than left to the field tooltip, because this failure is
+		// entirely silent: Lago answers 200, stores the event, and never bills it. There is no
+		// error to prompt anyone to go looking, and the shortfall only surfaces at invoicing.
+		displayName:
+			'An event whose billable metric code matches no active metric is <b>accepted and never billed</b> — Lago reports no error. Choose the code from the list rather than typing it, and check it here first if usage does not appear.',
+		name: 'unmatchedCodeNotice',
+		type: 'notice',
+		default: '',
+		displayOptions: { show: { resource: ['event'], operation: ['send', 'sendBatch'] } },
+	},
 	...sendFields,
 	...sendBatchFields,
 	...getFields,
