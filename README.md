@@ -157,6 +157,13 @@ Event sending is idempotent on the transaction ID, and Lago deduplicates on it, 
 
 Initial release.
 
+## Attribution
+
+The Lago name and logo are trademarks of Lago. This is an independent community node and is not
+affiliated with or endorsed by Lago. The node icon is Lago's own brand mark, taken from
+[lago-front](https://github.com/getlago/lago-front), and is used to identify the service the node
+integrates with.
+
 ## License
 
 [MIT](LICENSE.md)

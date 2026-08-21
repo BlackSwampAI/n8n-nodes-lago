@@ -63,6 +63,21 @@ describe('the metric code field', () => {
 	});
 });
 
+// The most dangerous behaviour in the node: Lago answers 200, stores the event, and never bills
+// it. Nothing errors, so nobody thinks to hover — the warning has to be visible in the panel.
+describe('the unmatched-code notice', () => {
+	const notice = properties.find((property) => property.name === 'unmatchedCodeNotice');
+
+	it('is a panel notice rather than a tooltip', () => {
+		expect(notice?.type).toBe('notice');
+		expect(notice?.displayName).toMatch(/accepted and never billed/i);
+	});
+
+	it('appears on both operations that send events', () => {
+		expect(notice?.displayOptions?.show?.operation).toEqual(['send', 'sendBatch']);
+	});
+});
+
 describe('event field reuse', () => {
 	it('describes an event the same way wherever one is described', () => {
 		const names = eventValueFields().map((field) => field.name);

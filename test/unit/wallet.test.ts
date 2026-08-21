@@ -68,6 +68,27 @@ describe('paid versus granted credits', () => {
 		);
 	});
 
+	// The tooltip alone is not enough here: the request succeeds, the transaction is created, and
+	// the balance is simply lower than expected, which reads as the node losing credits. A notice
+	// renders in the panel rather than behind a hover.
+	it('shows a panel notice on Wallet Transaction, not just a tooltip', () => {
+		const notice = properties.find(
+			(property) =>
+				property.name === 'paidCreditsNotice' &&
+				property.displayOptions?.show?.resource?.includes('walletTransaction'),
+		);
+		expect(notice?.type).toBe('notice');
+		expect(notice?.displayName).toMatch(/pending/i);
+		expect(notice?.displayName).toMatch(/not included in the wallet balance/i);
+	});
+
+	// Only relevant when paid credits are actually being added, so it stays out of the way
+	// otherwise.
+	it('hides that notice when no paid credits are being added', () => {
+		const notice = properties.find((property) => property.name === 'paidCreditsNotice');
+		expect(notice?.displayOptions?.hide?.paidCredits).toEqual(['0', '']);
+	});
+
 	// Sent as text so decimals survive exactly, as with every other Lago money field.
 	it.each(['rateAmount', 'paidCredits', 'grantedCredits'])('types %s as a string', (field) => {
 		expect(fieldFor('wallet', field, 'create')?.type).toBe('string');

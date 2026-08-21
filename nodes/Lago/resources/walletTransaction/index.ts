@@ -66,6 +66,21 @@ export const walletTransactionDescription: INodeProperties[] = [
 		displayOptions: { show: scope('create') },
 	},
 	{
+		// Shown in the panel rather than left to the field tooltip, because this failure is
+		// silent: the request succeeds, the transaction is created, and the balance is simply
+		// lower than expected — which reads as the node losing credits rather than Lago holding
+		// them. Hidden when no paid credits are being added, so it only appears when it applies.
+		displayName:
+			'Paid credits are recorded as <b>pending</b> until the top-up invoice is paid, and are not included in the wallet balance until then. Granted credits settle immediately.',
+		name: 'paidCreditsNotice',
+		type: 'notice',
+		default: '',
+		displayOptions: {
+			show: { ...scope('create') },
+			hide: { paidCredits: ['0', ''] },
+		},
+	},
+	{
 		displayName: 'Voided Credits',
 		name: 'voidedCredits',
 		type: 'string',
