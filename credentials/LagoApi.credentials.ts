@@ -36,6 +36,19 @@ export class LagoApi implements ICredentialType {
 			description:
 				'A Lago API key, found in the Lago app under Developers > API keys. Rate limits apply per organization, so all keys share one budget.',
 		},
+		{
+			displayName: 'Webhook HMAC Key',
+			name: 'hmacKey',
+			type: 'string',
+			typeOptions: { password: true },
+			default: '',
+			// Only the trigger uses this, and only when an endpoint is signed with HMAC. It lives
+			// on the credential rather than the node because it is a secret, and because the JWT
+			// alternative needs nothing here at all — its verification key is fetched with the API
+			// key above.
+			description:
+				'Only needed if you verify webhooks signed with HMAC. Found in the Lago app under Developers > Webhooks. Leave empty when using JWT, which is the default and fetches its key automatically.',
+		},
 	];
 
 	authenticate: IAuthenticateGeneric = {

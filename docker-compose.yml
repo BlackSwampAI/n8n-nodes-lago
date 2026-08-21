@@ -84,6 +84,11 @@ services:
   api:
     <<: *backend-image
     command: ['./scripts/start.api.sh']
+    # Lets Lago deliver webhooks to a listener on the host, which is how the trigger's
+    # end-to-end test verifies a real signed delivery. Docker Desktop provides this name
+    # already; on Linux it has to be mapped explicitly.
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -108,6 +113,10 @@ services:
   worker:
     <<: *backend-image
     command: ['./scripts/start.worker.sh']
+    # Webhook delivery runs in Sidekiq, so the worker is the container that actually needs to
+    # reach the host.
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     depends_on:
       migrate:
         condition: service_completed_successfully
