@@ -35,6 +35,7 @@
 		"test:watch": "vitest",
 		"lago:up": "node scripts/lago-dev.mjs up",
 		"lago:down": "node scripts/lago-dev.mjs down",
+		"generate:webhook-events": "node scripts/generate-webhook-events.mjs",
 		"release:check": "node scripts/release-check.mjs",
 		"release": "n8n-node release",
 		"prepublishOnly": "n8n-node prerelease"

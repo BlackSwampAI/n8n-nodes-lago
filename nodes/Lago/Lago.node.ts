@@ -16,6 +16,7 @@ import { planChargeDescription } from './resources/planCharge';
 import { subscriptionDescription } from './resources/subscription';
 import { walletDescription } from './resources/wallet';
 import { walletTransactionDescription } from './resources/walletTransaction';
+import { webhookEndpointDescription } from './resources/webhookEndpoint';
 import { getBillableMetricCodes, getBillableMetricIds } from './shared/loadOptions';
 import { routeOperations } from './shared/router';
 
@@ -67,6 +68,7 @@ export class Lago implements INodeType {
 					{ name: 'Subscription', value: 'subscription' },
 					{ name: 'Wallet', value: 'wallet' },
 					{ name: 'Wallet Transaction', value: 'walletTransaction' },
+					{ name: 'Webhook Endpoint', value: 'webhookEndpoint' },
 				],
 			},
 			...billableMetricDescription,
@@ -80,6 +82,7 @@ export class Lago implements INodeType {
 			...subscriptionDescription,
 			...walletDescription,
 			...walletTransactionDescription,
+			...webhookEndpointDescription,
 		],
 	};
 

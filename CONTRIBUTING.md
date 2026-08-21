@@ -11,17 +11,18 @@ npm install
 
 ## Everyday commands
 
-| Command                                 | What it does                                              |
-| --------------------------------------- | --------------------------------------------------------- |
-| `npm run dev`                           | Start n8n with this node loaded and hot reload enabled    |
-| `npm run build`                         | Compile to `dist/`                                        |
-| `npm run lint` / `npm run lint:fix`     | n8n's community-node lint rules                           |
-| `npm run typecheck`                     | Typecheck sources and tests together                      |
-| `npm test`                              | Run every test                                            |
-| `npm run test:unit`                     | Unit tests only, no Docker needed                         |
-| `npm run test:integration`              | Integration tests against a live Lago                     |
-| `npm run lago:up` / `npm run lago:down` | Start or destroy the disposable Lago instance             |
-| `npm run release:check`                 | Audit the package against n8n's verification requirements |
+| Command                                 | What it does                                                        |
+| --------------------------------------- | ------------------------------------------------------------------- |
+| `npm run dev`                           | Start n8n with this node loaded and hot reload enabled              |
+| `npm run build`                         | Compile to `dist/`                                                  |
+| `npm run lint` / `npm run lint:fix`     | n8n's community-node lint rules                                     |
+| `npm run typecheck`                     | Typecheck sources and tests together                                |
+| `npm test`                              | Run every test                                                      |
+| `npm run test:unit`                     | Unit tests only, no Docker needed                                   |
+| `npm run test:integration`              | Integration tests against a live Lago                               |
+| `npm run lago:up` / `npm run lago:down` | Start or destroy the disposable Lago instance                       |
+| `npm run generate:webhook-events`       | Regenerate the webhook event catalogue from the pinned Lago version |
+| `npm run release:check`                 | Audit the package against n8n's verification requirements           |
 
 ## The disposable Lago environment
 
@@ -80,6 +81,26 @@ The n8n community-node lint rules apply to every `.ts` file in the package and c
 scoped to `nodes/` and `credentials/` while `n8n.strict` is on. Reading environment variables
 and the filesystem from a `.ts` test would trip them. Keeping that access in `.mjs` modules
 lets everything else stay TypeScript. `vitest.config.mjs` is JavaScript for the same reason.
+
+## Generated files
+
+`nodes/Lago/shared/webhookEventTypes.ts` is generated, not written by hand. Lago validates the
+`event_types` field on a webhook endpoint against a YAML file compiled into the server, and
+exposes no API that lists it, so the node carries a snapshot.
+
+```sh
+npm run generate:webhook-events
+npx prettier --write nodes/Lago/shared/webhookEventTypes.ts
+npm run test:integration
+```
+
+The script reads the Lago version from the `getlago/api` image tag in `docker-compose.yml`
+rather than taking an argument, so the catalogue cannot drift from the server the tests run
+against. **Run it whenever that tag changes.** The catalogue grows between Lago releases —
+generating from the repository's default branch once produced nine events that a v1.51.0 server
+rejects — so pinning to the running version is deliberate.
+
+If you forget, the integration test that sends every event in the catalogue to Lago fails.
 
 ## Conventions
 
