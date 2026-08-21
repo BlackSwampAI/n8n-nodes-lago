@@ -15,6 +15,7 @@ import { planChargeOperations } from '../resources/planCharge';
 import { subscriptionOperations } from '../resources/subscription';
 import { walletOperations } from '../resources/wallet';
 import { walletTransactionOperations } from '../resources/walletTransaction';
+import { webhookEndpointOperations } from '../resources/webhookEndpoint';
 import type { OperationHandlers } from './types';
 
 /**
@@ -35,6 +36,7 @@ export const resources: Record<string, OperationHandlers> = {
 	subscription: subscriptionOperations,
 	wallet: walletOperations,
 	walletTransaction: walletTransactionOperations,
+	webhookEndpoint: webhookEndpointOperations,
 };
 
 /**

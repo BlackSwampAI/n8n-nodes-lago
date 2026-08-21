@@ -37,8 +37,14 @@ The **Lago** node currently supports:
 | Subscription       | Create, Get, Get Many, Update, Terminate                                                         |
 | Wallet             | Create, Get, Get Many, Update, Terminate                                                         |
 | Wallet Transaction | Create, Get Many                                                                                 |
+| Webhook Endpoint   | Create, Get, Get Many, Update, Delete                                                            |
 
-Further resources land per milestone: Webhook Endpoint, then a Lago Trigger.
+A **Lago Trigger** lands next, starting workflows from these webhooks.
+
+Webhook endpoints register where Lago sends events. Event names are **dotted**
+(`invoice.created`), not underscored as the OpenAPI specification shows them, and the node
+offers the catalogue from the Lago version it targets so a selection cannot be rejected. An
+organization may have at most ten endpoints.
 
 Prepaid credit wallets distinguish **paid** credits from **granted** credits: granted credits
 settle immediately, while paid credits are recorded as a pending transaction until the top-up
