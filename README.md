@@ -1,5 +1,9 @@
 # @blackswampai/n8n-nodes-lago
 
+[![npm version](https://img.shields.io/npm/v/@blackswampai/n8n-nodes-lago)](https://www.npmjs.com/package/@blackswampai/n8n-nodes-lago)
+[![CI](https://github.com/BlackSwampAI/n8n-nodes-lago/actions/workflows/ci.yml/badge.svg)](https://github.com/BlackSwampAI/n8n-nodes-lago/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/@blackswampai/n8n-nodes-lago)](LICENSE.md)
+
 This is an n8n community node. It lets you use [Lago](https://www.getlago.com/) in your n8n workflows.
 
 Lago is an open-source billing and metering platform for subscription, usage-based, and hybrid pricing. It turns raw usage events into invoices, and covers plans, prepaid credit wallets, coupons, credit notes, and the billing lifecycle around them.
@@ -14,11 +18,27 @@ Lago is an open-source billing and metering platform for subscription, usage-bas
 [Resources](#resources)
 [Version history](#version-history)
 
-> **Pre-release.** This package is under active development and has not been published yet.
-
 ## Installation
 
-Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
+Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the
+n8n community nodes documentation, using the package name:
+
+```
+@blackswampai/n8n-nodes-lago
+```
+
+Or install it directly into a self-hosted instance:
+
+```sh
+npm install @blackswampai/n8n-nodes-lago
+```
+
+Published from GitHub Actions with an [SLSA provenance attestation](https://slsa.dev/provenance/v1),
+so the package can be traced to the repository and commit it was built from:
+
+```sh
+npm view @blackswampai/n8n-nodes-lago dist.attestations
+```
 
 ## Operations
 
