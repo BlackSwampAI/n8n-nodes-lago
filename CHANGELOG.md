@@ -5,7 +5,16 @@ All notable changes to this project are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project
 adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.0] - Unreleased
+## [0.1.1] - 2026-08-22
+
+### Changed
+
+- `homepage` now points to the package's documentation page at
+  <https://blackswampai.com/n8n-nodes/lago/> instead of the GitHub README.
+  Metadata only: the package name, node paths, dependencies, and behaviour
+  are unchanged.
+
+## [0.1.0] - 2026-08-21
 
 First release. Covers the billing lifecycle end to end: define what is measured, price it,
 subscribe a customer, meter usage, and act on what Lago produces.
