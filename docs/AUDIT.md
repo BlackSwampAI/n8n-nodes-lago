@@ -575,4 +575,4 @@ single-copy environment.
 - [Lago OpenAPI 1.51.0](https://github.com/getlago/lago-openapi) (fetched and parsed directly)
 - [Lago API reference](https://docs.getlago.com/api-reference/intro) · [Rate limits](https://docs.getlago.com/api-reference/rate-limits) · [Webhook format & signature](https://docs.getlago.com/api-reference/webhooks/format---signature) · [Webhooks guide](https://docs.getlago.com/guide/webhooks) · [Pricing FAQ](https://docs.getlago.com/faq/pricing) · [Self-hosted overview](https://docs.getlago.com/guide/lago-self-hosted/overview)
 - [getlago/lago](https://github.com/getlago/lago) · npm registry (`n8n-nodes-lago`, `n8n-nodes-lago-api`) · [libraries.io](https://libraries.io/npm/n8n-nodes-lago)
-- [n8n submit community nodes](https://docs.n8n.io/integrations/creating-nodes/deploy/submit-community-nodes/) · [n8n nodes-base](https://github.com/n8n-io/n8n/tree/master/packages/nodes-base/nodes)
+- [n8n community-node verification guidelines](https://docs.n8n.io/integrations/creating-nodes/build/reference/verification-guidelines/) · [n8n nodes-base](https://github.com/n8n-io/n8n/tree/master/packages/nodes-base/nodes)
