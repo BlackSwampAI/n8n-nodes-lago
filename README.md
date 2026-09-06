@@ -1,8 +1,10 @@
 # @blackswampai/n8n-nodes-lago
 
-[![npm version](https://img.shields.io/npm/v/@blackswampai/n8n-nodes-lago)](https://www.npmjs.com/package/@blackswampai/n8n-nodes-lago)
+[![npm version](https://img.shields.io/npm/v/%40blackswampai%2Fn8n-nodes-lago)](https://www.npmjs.com/package/@blackswampai/n8n-nodes-lago)
 [![CI](https://github.com/BlackSwampAI/n8n-nodes-lago/actions/workflows/ci.yml/badge.svg)](https://github.com/BlackSwampAI/n8n-nodes-lago/actions/workflows/ci.yml)
-[![license](https://img.shields.io/npm/l/@blackswampai/n8n-nodes-lago)](LICENSE.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
+
+[Installation](#installation) · [Operations](#operations) · [Credentials](#credentials) · [Compatibility](#compatibility) · [Usage](#usage) · [Resources](#resources) · [Black Swamp AI](https://blackswampai.com/n8n-nodes/lago/)
 
 This is an n8n community node. It lets you use [Lago](https://www.getlago.com/) in your n8n workflows.
 
@@ -10,24 +12,19 @@ Lago is an open-source billing and metering platform for subscription, usage-bas
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
-[Installation](#installation)
-[Operations](#operations)
-[Credentials](#credentials)
-[Compatibility](#compatibility)
-[Usage](#usage)
-[Resources](#resources)
-[Version history](#version-history)
-
 ## Installation
 
-Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the
-n8n community nodes documentation, using the package name:
+Lago is a community package that is not currently available through verified-node discovery. On a
+self-hosted n8n instance, open **Settings → Community Nodes**, select **Install**, and enter this exact
+package name:
 
 ```
 @blackswampai/n8n-nodes-lago
 ```
 
-Or install it directly into a self-hosted instance:
+For managed installations, follow n8n's
+[community-node installation guide](https://docs.n8n.io/integrations/community-nodes/installation/).
+Administrators may also install the package directly in an appropriate self-hosted environment:
 
 ```sh
 npm install @blackswampai/n8n-nodes-lago
@@ -170,19 +167,21 @@ Event sending is idempotent on the transaction ID, and Lago deduplicates on it, 
 - [Lago documentation](https://docs.getlago.com/)
 - [Lago API reference](https://docs.getlago.com/api-reference/intro)
 - [Lago webhook reference](https://docs.getlago.com/api-reference/webhooks/format---signature)
+- [Changelog](CHANGELOG.md)
+- [Black Swamp AI package page](https://blackswampai.com/n8n-nodes/lago/)
 
-## Version history
+## Independence and trademarks
 
-### 0.1.0 (unreleased)
+This is an independent Black Swamp AI community integration. It is not affiliated with, endorsed
+by, sponsored by, or maintained by Lago. The Lago name and logo belong to their respective owners
+and are used only to identify compatibility. See [the branding record](docs/branding.md) for the
+official asset provenance.
 
-Initial release.
+## Release provenance
 
-## Attribution
-
-The Lago name and logo are trademarks of Lago. This is an independent community node and is not
-affiliated with or endorsed by Lago. The node icon is Lago's own brand mark, taken from
-[lago-front](https://github.com/getlago/lago-front), and is used to identify the service the node
-integrates with.
+Releases are published from the tag-only GitHub Actions workflow with npm provenance. The
+repository tag, package version, packed contents, and official n8n source scan are checked before
+publication; the published package is scanned again after registry propagation.
 
 ## License
 

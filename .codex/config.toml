@@ -1,0 +1,5 @@
+[agents]
+max_concurrent_threads_per_session = 1
+
+[agents.builder]
+config_file = "agents/builder.toml"
