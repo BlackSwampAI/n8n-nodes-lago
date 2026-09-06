@@ -1,33 +1,35 @@
 # @blackswampai/n8n-nodes-lago
 
-[![npm version](https://img.shields.io/npm/v/@blackswampai/n8n-nodes-lago)](https://www.npmjs.com/package/@blackswampai/n8n-nodes-lago)
+[![npm version](https://img.shields.io/npm/v/%40blackswampai%2Fn8n-nodes-lago)](https://www.npmjs.com/package/@blackswampai/n8n-nodes-lago)
 [![CI](https://github.com/BlackSwampAI/n8n-nodes-lago/actions/workflows/ci.yml/badge.svg)](https://github.com/BlackSwampAI/n8n-nodes-lago/actions/workflows/ci.yml)
-[![license](https://img.shields.io/npm/l/@blackswampai/n8n-nodes-lago)](LICENSE.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE.md)
+
+[Installation](#installation) · [Operations](#operations) · [Credentials](#credentials) · [Compatibility](#compatibility) · [Usage](#usage) · [Troubleshooting](#troubleshooting) · [Resources](#resources) · [Black Swamp AI](https://blackswampai.com/n8n-nodes/lago/)
 
 This is an n8n community node. It lets you use [Lago](https://www.getlago.com/) in your n8n workflows.
 
 Lago is an open-source billing and metering platform for subscription, usage-based, and hybrid pricing. It turns raw usage events into invoices, and covers plans, prepaid credit wallets, coupons, credit notes, and the billing lifecycle around them.
 
-[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
+> This is an independent Black Swamp AI community integration. It is not affiliated with,
+> endorsed by, sponsored by, or maintained by Lago. The Lago name and logo belong to their
+> respective owners and are used only to identify compatibility.
 
-[Installation](#installation)
-[Operations](#operations)
-[Credentials](#credentials)
-[Compatibility](#compatibility)
-[Usage](#usage)
-[Resources](#resources)
-[Version history](#version-history)
+[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
 ## Installation
 
-Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the
-n8n community nodes documentation, using the package name:
+Lago is a community package that is not currently available through verified-node discovery. On a
+self-hosted n8n instance, open **Settings → Community Nodes**, select **Install**, and enter this exact
+package name:
 
 ```
 @blackswampai/n8n-nodes-lago
 ```
 
-Or install it directly into a self-hosted instance:
+See n8n's
+[GUI installation guide](https://docs.n8n.io/integrations/community-nodes/installation-and-management/gui-installation/)
+for the current self-hosted community-node requirements. As an advanced self-hosted
+administrator fallback, install the package in the n8n environment:
 
 ```sh
 npm install @blackswampai/n8n-nodes-lago
@@ -170,19 +172,23 @@ Event sending is idempotent on the transaction ID, and Lago deduplicates on it, 
 - [Lago documentation](https://docs.getlago.com/)
 - [Lago API reference](https://docs.getlago.com/api-reference/intro)
 - [Lago webhook reference](https://docs.getlago.com/api-reference/webhooks/format---signature)
+- [Changelog](CHANGELOG.md)
+- [Black Swamp AI package page](https://blackswampai.com/n8n-nodes/lago/)
 
-## Version history
+## Troubleshooting
 
-### 0.1.0 (unreleased)
+- If installation fails, confirm the instance is self-hosted, community nodes are enabled, and the
+  exact scoped package name was entered.
+- If credentials fail, verify the Lago API base URL and API key for the same Lago environment.
+- Lago processes some billing actions asynchronously; a successful request may precede an updated
+  balance, generated PDF, or completed deletion.
+- Never include API keys, webhook signing material, or complete payloads in an issue.
 
-Initial release.
+## Release provenance
 
-## Attribution
-
-The Lago name and logo are trademarks of Lago. This is an independent community node and is not
-affiliated with or endorsed by Lago. The node icon is Lago's own brand mark, taken from
-[lago-front](https://github.com/getlago/lago-front), and is used to identify the service the node
-integrates with.
+Releases are published from the tag-only GitHub Actions workflow with npm provenance. The
+repository tag, package version, packed contents, and official n8n source scan are checked before
+publication; the published package is scanned again after registry propagation.
 
 ## License
 

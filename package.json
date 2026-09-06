@@ -1,6 +1,7 @@
 {
 	"name": "@blackswampai/n8n-nodes-lago",
-	"version": "0.1.1",
+	"version": "0.1.2",
+	"packageManager": "npm@11.19.0",
 	"description": "n8n community node for Lago: subscription billing, usage metering, invoicing, prepaid credits, and billing lifecycle events",
 	"license": "MIT",
 	"homepage": "https://blackswampai.com/n8n-nodes/lago/",
@@ -20,15 +21,20 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/BlackSwampAI/n8n-nodes-lago.git"
+		"url": "https://github.com/BlackSwampAI/n8n-nodes-lago.git"
+	},
+	"bugs": {
+		"url": "https://github.com/BlackSwampAI/n8n-nodes-lago/issues"
 	},
 	"scripts": {
 		"build": "n8n-node build",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
 		"build:watch": "tsc --watch",
 		"dev": "n8n-node dev",
 		"lint": "n8n-node lint",
 		"lint:fix": "n8n-node lint --fix",
-		"typecheck": "tsc --noEmit -p tsconfig.test.json",
+		"typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.test.json",
 		"test": "vitest run",
 		"test:unit": "vitest run test/unit",
 		"test:integration": "vitest run test/integration",
@@ -37,6 +43,11 @@
 		"lago:down": "node scripts/lago-dev.mjs down",
 		"generate:webhook-events": "node scripts/generate-webhook-events.mjs",
 		"release:check": "node scripts/release-check.mjs",
+		"scan:source": "node scripts/scan-source.mjs",
+		"scan:published": "node scripts/scan-published.mjs",
+		"package:check": "node scripts/package-check.mjs",
+		"smoke:load": "node scripts/node-load-smoke.mjs",
+		"smoke:install": "node scripts/package-install-smoke.mjs",
 		"release": "n8n-node release",
 		"prepublishOnly": "n8n-node prerelease"
 	},
@@ -55,12 +66,13 @@
 		]
 	},
 	"devDependencies": {
-		"@n8n/node-cli": "0.42.2",
+		"@n8n/node-cli": "0.46.4",
+		"@n8n/scan-community-package": "0.34.0",
 		"eslint": "9.32.0",
 		"prettier": "3.6.2",
 		"release-it": "20.2.0",
 		"typescript": "5.9.2",
-		"vitest": "^3.2.7"
+		"vitest": "4.1.11"
 	},
 	"peerDependencies": {
 		"n8n-workflow": "*"
@@ -70,5 +82,8 @@
 	},
 	"publishConfig": {
 		"access": "public"
+	},
+	"allowScripts": {
+		"eslint-plugin-n8n-nodes-base": false
 	}
 }

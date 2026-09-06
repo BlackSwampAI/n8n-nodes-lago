@@ -1,82 +1,41 @@
 name: CI
-
-on:
-  pull_request:
-  push:
-    branches:
-      - main
-
-# Cancel in-progress runs for the same branch/PR to avoid wasting CI minutes.
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
-
+on: { pull_request: {}, push: { branches: [main] } }
+permissions: { contents: read }
+concurrency: { group: 'ci-${{ github.ref }}', cancel-in-progress: true }
 jobs:
-  # Fast feedback: everything that needs no database and no containers.
-  check:
-    name: Lint, typecheck, unit tests, build
+  verify:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 20
+    strategy: { matrix: { node-version: ['22.22.0', '24'] } }
     steps:
       - uses: actions/checkout@v6
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 'lts/*'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check formatting
-        run: npx prettier --check .
-
-      - name: Run lint
-        run: npm run lint
-
-      - name: Run typecheck
-        run: npm run typecheck
-
-      - name: Run unit tests
-        run: npm run test:unit
-
-      - name: Run build
-        run: npm run build
-
-      - name: Audit release configuration
-        run: npm run release:check
-
-  # Integration tests run against a real Lago instance, brought up the same way a developer
-  # does it locally. Split from `check` so a Lago or Docker problem is never mistaken for a
-  # problem with this package.
+      - uses: actions/setup-node@v6
+        with: { node-version: '${{ matrix.node-version }}', cache: npm }
+      - run: npm install --global npm@11.19.0
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:unit
+      - run: npm run build
+      - run: npm run scan:source
+      - run: npm run release:check
+      - run: npm run package:check
+      - run: npm run smoke:load
+      - run: npm run smoke:install
   integration:
-    name: Integration tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
     steps:
       - uses: actions/checkout@v6
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 'lts/*'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Start Lago and seed an organization
-        run: npm run lago:up
-
-      - name: Run integration tests
-        run: npm run test:integration
-
-      - name: Show Lago logs on failure
-        if: failure()
+      - uses: actions/setup-node@v6
+        with: { node-version: '22.22.0', cache: npm }
+      - run: npm install --global npm@11.19.0
+      - run: npm ci
+      - run: npm run lago:up
+      - run: npm run test:integration
+        env: { LAGO_DISPOSABLE_TEST_ENV: 'true' }
+      - if: failure()
         run: docker compose --env-file .env.lago logs --tail 200
-
-      - name: Tear down
-        if: always()
+      - if: always()
         run: npm run lago:down
