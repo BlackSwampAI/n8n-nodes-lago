@@ -7,7 +7,7 @@ Before tagging, run the format, lint, strict typecheck, unit, build, scanner, re
 compiled-load, isolated-install, and guarded Docker integration gates. Confirm CI is green on the
 exact commit. Create an annotated `v<version>` tag only when it exactly matches `package.json`.
 
-After the workflow publishes, require the official scanner's explicit
+After `publish` succeeds, the separate dependent `verify-published` job runs the official scanner. If only that job fails, GitHub Actions **Re-run failed jobs** safely reruns verification without invoking `npm run release`; never rerun the successful publish job for an immutable version. Require the official scanner's explicit
 `Package <exact-spec> has passed all security checks` text; its exit status alone is insufficient.
 The wrapper retries only bounded, recognized registry/provenance propagation failures, including
 the brief public-source 404 observed immediately after publication; deterministic findings fail

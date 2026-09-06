@@ -82,9 +82,14 @@ for (const workflow of [ci, publish])
 		'npm run smoke:install',
 	])
 		if (!workflow.includes(command)) fail(`Workflow missing ${command}`);
+const [publishJob, verifyPublishedJob = ''] = publish.split(/\n  verify-published:\s*\n/);
 if (
-	!publish.includes('node scripts/prepare-npm-auth.mjs') ||
-	!publish.includes('npm run scan:published') ||
+	!publishJob.includes('node scripts/prepare-npm-auth.mjs') ||
+	!/needs:\s*publish/.test(verifyPublishedJob) ||
+	!verifyPublishedJob.includes('npm run scan:published') ||
+	publishJob.includes('npm run scan:published') ||
+	verifyPublishedJob.includes('npm run release') ||
+	/id-token:\s*write/.test(verifyPublishedJob) ||
 	!read('scripts/scan-published.mjs').includes('has passed all security checks')
 )
 	fail('Publish auth/scanner sequence is incomplete');

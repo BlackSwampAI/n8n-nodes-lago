@@ -21,7 +21,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/BlackSwampAI/n8n-nodes-lago.git"
+		"url": "https://github.com/BlackSwampAI/n8n-nodes-lago.git"
 	},
 	"bugs": {
 		"url": "https://github.com/BlackSwampAI/n8n-nodes-lago/issues"
