@@ -1,19 +1,25 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+
 const root = resolve(import.meta.dirname, '..');
-const temporary = mkdtempSync(join(tmpdir(), 'lago-package-smoke-'));
+const { name } = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
+const temporaryRoot = mkdtempSync(join(tmpdir(), 'n8n-community-package-smoke-'));
+const consumer = join(temporaryRoot, 'consumer');
+
 try {
 	const [{ filename }] = JSON.parse(
-		execFileSync('npm', ['pack', '--json', '--pack-destination', temporary], {
+		execFileSync('npm', ['pack', '--json', '--pack-destination', temporaryRoot], {
 			cwd: root,
 			encoding: 'utf8',
 		}),
 	);
-	const consumer = join(temporary, 'consumer');
 	mkdirSync(consumer);
-	writeFileSync(join(consumer, 'package.json'), '{"name":"lago-smoke","private":true}\n');
+	writeFileSync(
+		join(consumer, 'package.json'),
+		'{"name":"n8n-node-install-smoke","private":true}\n',
+	);
 	execFileSync(
 		'npm',
 		[
@@ -23,17 +29,17 @@ try {
 			'--omit=peer',
 			'--no-audit',
 			'--no-fund',
-			join(temporary, filename),
+			join(temporaryRoot, filename),
 		],
 		{ cwd: consumer, stdio: 'pipe' },
 	);
-	const installed = join(consumer, 'node_modules', '@blackswampai', 'n8n-nodes-lago');
-	execFileSync(process.execPath, [resolve(root, 'scripts/node-load-smoke.mjs'), installed], {
+	const installedRoot = resolve(consumer, 'node_modules', ...name.split('/'));
+	execFileSync(process.execPath, [resolve(root, 'scripts/node-load-smoke.mjs'), installedRoot], {
 		cwd: consumer,
 		stdio: 'inherit',
 		env: { ...process.env, NODE_PATH: resolve(root, 'node_modules') },
 	});
-	console.log('Packed Lago package installed and loaded in an isolated consumer');
+	console.log('Packed package installed and loaded successfully in an isolated consumer');
 } finally {
-	rmSync(temporary, { recursive: true, force: true });
+	rmSync(temporaryRoot, { recursive: true, force: true });
 }

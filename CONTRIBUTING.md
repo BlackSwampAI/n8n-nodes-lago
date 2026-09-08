@@ -31,6 +31,7 @@ what is worth testing here is Lago's actual billing behaviour.
 
 ```sh
 npm run lago:up
+npm run test:integration
 ```
 
 This starts Postgres, Redis, the Lago API and a Sidekiq worker, seeds an organization, and
@@ -72,8 +73,9 @@ test/integration/   drives a real Lago instance
 test/support/       shared helpers, in JavaScript (see below)
 ```
 
-Integration tests **skip rather than fail** when no Lago is configured, so contributors
-without Docker can still run `npm test` and get a meaningful result.
+Integration tests **skip rather than fail** when no Lago is configured. Use `npm run test:unit`
+for the Docker-free suite; after `npm run lago:up`, use `npm run test:integration` for the
+explicit live suite.
 
 ### Why test/support is JavaScript
 
@@ -111,5 +113,5 @@ explaining _why_.
 Before opening a pull request:
 
 ```sh
-npm run lint && npm run typecheck && npm test && npm run build && npm run release:check
+npm run lint && npm run typecheck && npm run test:unit && npm run build && npm run release:check
 ```

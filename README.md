@@ -10,9 +10,9 @@ This is an n8n community node. It lets you use [Lago](https://www.getlago.com/) 
 
 Lago is an open-source billing and metering platform for subscription, usage-based, and hybrid pricing. It turns raw usage events into invoices, and covers plans, prepaid credit wallets, coupons, credit notes, and the billing lifecycle around them.
 
-> This is an independent Black Swamp AI community integration. It is not affiliated with,
-> endorsed by, sponsored by, or maintained by Lago. The Lago name and logo belong to their
-> respective owners and are used only to identify compatibility.
+> This is an independent community integration and is not affiliated with, endorsed by,
+> sponsored by, or maintained by Lago. The Lago name and logo belong to their respective owners
+> and are used only to identify compatibility.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 

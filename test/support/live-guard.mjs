@@ -25,3 +25,12 @@ export function assertDisposableLagoTarget(environment) {
 	}
 	return { baseUrl: parsed.toString().replace(/\/$/, ''), apiKey };
 }
+
+export function resolveDisposableLagoEnvironment(processEnvironment, fileValues = {}) {
+	return assertDisposableLagoTarget({
+		LAGO_BASE_URL: processEnvironment.LAGO_BASE_URL ?? fileValues.LAGO_BASE_URL,
+		LAGO_API_KEY: processEnvironment.LAGO_API_KEY ?? fileValues.LAGO_API_KEY,
+		LAGO_DISPOSABLE_TEST_ENV:
+			processEnvironment.LAGO_DISPOSABLE_TEST_ENV ?? fileValues.LAGO_DISPOSABLE_TEST_ENV,
+	});
+}

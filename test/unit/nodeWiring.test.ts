@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
-import type { INodeProperties } from 'n8n-workflow';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import type { IExecuteFunctions, INodeExecutionData, INodeProperties } from 'n8n-workflow';
 import { Lago } from '../../nodes/Lago/Lago.node';
-import { resources } from '../../nodes/Lago/shared/router';
+import { resources, routeOperations } from '../../nodes/Lago/shared/router';
 
 const properties = new Lago().description.properties;
 
@@ -25,6 +25,21 @@ function operationsFor(resource: string): string[] {
 const allOperations = operationSelectors.flatMap(
 	(selector) => (selector.options ?? []) as Array<{ value: string }>,
 );
+
+function containsRoutingMetadata(value: unknown): boolean {
+	if (!value || typeof value !== 'object') return false;
+	if (Object.prototype.hasOwnProperty.call(value, 'routing')) return true;
+	return Object.values(value).some(containsRoutingMetadata);
+}
+
+describe('programmatic action-node contract', () => {
+	it('uses execute without dead or misleading declarative routing metadata', () => {
+		const node = new Lago();
+		expect(node.execute).toBeTypeOf('function');
+		expect(node.description.requestDefaults).toBeUndefined();
+		expect(containsRoutingMetadata(node.description.properties)).toBe(false);
+	});
+});
 
 describe('resource and handler agreement', () => {
 	it('offers every dispatchable resource in the Resource dropdown', () => {
@@ -124,5 +139,89 @@ describe('field conventions', () => {
 		for (const selector of operationSelectors) {
 			expect(selector.noDataExpression).toBe(true);
 		}
+	});
+});
+
+describe('programmatic router responsibilities', () => {
+	const originalHandler = resources.customer.createOrUpdate;
+
+	afterEach(() => {
+		resources.customer.createOrUpdate = originalHandler;
+	});
+
+	function context(items: INodeExecutionData[], continueOnFail = false): IExecuteFunctions {
+		return {
+			getInputData: () => items,
+			getNodeParameter: (name: string) => (name === 'resource' ? 'customer' : 'createOrUpdate'),
+			continueOnFail: () => continueOnFail,
+			getNode: () => ({
+				id: 'test',
+				name: 'Lago',
+				type: 'n8n-nodes-lago.lago',
+				typeVersion: 1,
+				position: [0, 0],
+				parameters: {},
+			}),
+		} as unknown as IExecuteFunctions;
+	}
+
+	it('preserves frozen inputs, deterministic order, flattened records, and pairing', async () => {
+		const items = [
+			Object.freeze({ json: Object.freeze({ input: 'first' }) }),
+			Object.freeze({ json: Object.freeze({ input: 'second' }) }),
+		] as INodeExecutionData[];
+		const before = JSON.stringify(items);
+		resources.customer.createOrUpdate = vi.fn(async function (index) {
+			const input = this.getInputData()[index].json.input;
+			return index === 0
+				? [
+						{ input, record: 1 },
+						{ input, record: 2 },
+					]
+				: { input, record: 1 };
+		});
+
+		const [output] = await routeOperations.call(context(items));
+
+		expect(output).toEqual([
+			{ json: { input: 'first', record: 1 }, pairedItem: { item: 0 } },
+			{ json: { input: 'first', record: 2 }, pairedItem: { item: 0 } },
+			{ json: { input: 'second', record: 1 }, pairedItem: { item: 1 } },
+		]);
+		expect(JSON.stringify(items)).toBe(before);
+	});
+
+	it('continues per item with paired error output when Continue On Fail is enabled', async () => {
+		const calls: number[] = [];
+		resources.customer.createOrUpdate = vi.fn(async (index) => {
+			calls.push(index);
+			if (index === 1) throw new Error('row rejected');
+			return { index };
+		});
+
+		const [output] = await routeOperations.call(
+			context([{ json: {} }, { json: {} }, { json: {} }], true),
+		);
+
+		expect(calls).toEqual([0, 1, 2]);
+		expect(output).toEqual([
+			{ json: { index: 0 }, pairedItem: { item: 0 } },
+			{ json: { error: 'row rejected' }, pairedItem: { item: 1 } },
+			{ json: { index: 2 }, pairedItem: { item: 2 } },
+		]);
+	});
+
+	it('fails at the first rejected item when Continue On Fail is disabled', async () => {
+		const calls: number[] = [];
+		resources.customer.createOrUpdate = vi.fn(async (index) => {
+			calls.push(index);
+			if (index === 1) throw new Error('stop here');
+			return { index };
+		});
+
+		await expect(
+			routeOperations.call(context([{ json: {} }, { json: {} }, { json: {} }])),
+		).rejects.toThrow('stop here');
+		expect(calls).toEqual([0, 1]);
 	});
 });

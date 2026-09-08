@@ -1,4 +1,5 @@
 dist
 node_modules
+.npm-cache/
 .env.lago
 .env.test

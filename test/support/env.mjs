@@ -5,7 +5,7 @@
 // environment variables in a .mjs module lets the test suite stay TypeScript everywhere else.
 import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { assertDisposableLagoTarget } from './live-guard.mjs';
+import { resolveDisposableLagoEnvironment } from './live-guard.mjs';
 
 function fromEnvFile() {
 	const path = resolve(import.meta.dirname, '../../.env.test');
@@ -20,11 +20,7 @@ function fromEnvFile() {
 }
 
 const fileValues = fromEnvFile();
-const target = assertDisposableLagoTarget({
-	LAGO_BASE_URL: process.env.LAGO_BASE_URL ?? fileValues.LAGO_BASE_URL,
-	LAGO_API_KEY: process.env.LAGO_API_KEY ?? fileValues.LAGO_API_KEY,
-	LAGO_DISPOSABLE_TEST_ENV: process.env.LAGO_DISPOSABLE_TEST_ENV,
-});
+const target = resolveDisposableLagoEnvironment(process.env, fileValues);
 
 /** Base URL of the Lago instance under test, or undefined when none is configured. */
 export const lagoBaseUrl = target?.baseUrl;

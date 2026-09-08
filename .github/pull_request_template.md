@@ -1,18 +1,27 @@
-## Summary
+## Scope
 
-- Describe the user-visible or release-infrastructure change.
+- [ ] This PR implements one bounded outcome and does not include unrelated cleanup.
+- [ ] Added dependencies, public API changes, and release-strategy changes were explicitly approved.
+- [ ] `git diff --name-only` matches the assignment's allowed-file list.
+
+## Evidence
+
+- [ ] Required operation controls and blank/default-state behavior are covered.
+- [ ] Resource locators are tested with manual strings and list-mode objects where applicable.
+- [ ] External API claims distinguish generated contract, human documentation, and observed behavior.
+- [ ] Live fixtures, if any, are target-guarded, exact-owned, and assert cleanup.
+- [ ] Disposable Lago tests require the explicit marker and a loopback-only target.
 
 ## Validation
 
-- [ ] Format, lint, strict typecheck, and Vitest pass
-- [ ] Build and official source/built scanner preflight pass
-- [ ] Package boundary, compiled load, and isolated install smokes pass
-- [ ] Disposable live tests are guarded, cleaned up, and verified
-- [ ] Icons have provenance/hash, ship in the tarball, and render on contrasting backgrounds
-- [ ] README, API/testing/branding docs, and changelog remain accurate
+- [ ] Format, lint, strict typecheck, and Vitest pass.
+- [ ] Build and official source/built scanner preflight pass.
+- [ ] Package boundary and compiled-registration load smoke pass.
+- [ ] User-visible behavior was inspected in disposable n8n where practical; limitations are stated.
+- [ ] Packed node/credential icons, provenance/hash, and contrasting light/dark rendering were reviewed.
+- [ ] Release handoff requires the exact published version and a Creator Portal card version/logo check.
 
-## Release qualification
+## Safety
 
-- [ ] Tag exactly matches the package version
-- [ ] Published package explicitly passes the official scanner and provenance check
-- [ ] Creator Portal card version/logo are checked independently if submitted
+- [ ] No secrets, production data, publication, tag, release, or unrelated external mutation occurred.
+- [ ] Destructive behavior is confirmed, exact-targeted, and does not retry implicitly.
