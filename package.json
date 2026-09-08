@@ -1,6 +1,6 @@
 {
 	"name": "@blackswampai/n8n-nodes-lago",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"packageManager": "npm@11.19.0",
 	"description": "n8n community node for Lago: subscription billing, usage metering, invoicing, prepaid credits, and billing lifecycle events",
 	"license": "MIT",
@@ -68,10 +68,10 @@
 	"devDependencies": {
 		"@n8n/node-cli": "0.46.4",
 		"@n8n/scan-community-package": "0.34.0",
-		"eslint": "9.32.0",
-		"prettier": "3.6.2",
+		"eslint": "9.39.4",
+		"prettier": "3.8.3",
 		"release-it": "20.2.0",
-		"typescript": "5.9.2",
+		"typescript": "5.9.3",
 		"vitest": "4.1.11"
 	},
 	"peerDependencies": {

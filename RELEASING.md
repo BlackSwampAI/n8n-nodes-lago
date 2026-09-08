@@ -1,16 +1,35 @@
 # Releasing the Lago community node
 
-Publish only from `.github/workflows/publish.yml`; never publish locally. This established package
-uses npm Trusted Publisher/OIDC and must not retain an `NPM_TOKEN` secret.
+This repository publishes only from `.github/workflows/publish.yml`. Never run `npm publish` locally for a version intended for n8n verification. npm versions and published tags are immutable.
 
-Before tagging, run the format, lint, strict typecheck, unit, build, scanner, release, package,
-compiled-load, isolated-install, and guarded Docker integration gates. Confirm CI is green on the
-exact commit. Create an annotated `v<version>` tag only when it exactly matches `package.json`.
+## Release gate
 
-After `publish` succeeds, the separate dependent `verify-published` job runs the official scanner. If only that job fails, GitHub Actions **Re-run failed jobs** safely reruns verification without invoking `npm run release`; never rerun the successful publish job for an immutable version. Require the official scanner's explicit
-`Package <exact-spec> has passed all security checks` text; its exit status alone is insufficient.
-The wrapper retries only bounded, recognized registry/provenance propagation failures, including
-the brief public-source 404 observed immediately after publication; deterministic findings fail
-immediately.
-Verify npm latest/provenance and the GitHub release. If submitted to n8n, separately inspect the
-Creator Portal card version and logo. Versions and published tags are immutable.
+From a clean release commit, run:
+
+```sh
+npm ci
+npm run format:check
+npm run lint
+npm run typecheck
+npm run test:unit
+npm run build
+npm run scan:source
+npm run package:check
+npm run smoke:load
+npm run smoke:install
+git diff --check
+```
+
+Run the guarded Lago integration suite against its pinned disposable Docker stack and inspect representative credentials, operations, outputs, errors, and trigger activation in a disposable n8n instance. Confirm the packed light/dark icons and record the Creator Portal card version and logo separately.
+
+## Publishing 0.1.3
+
+1. Confirm `package.json`, `package-lock.json`, and `CHANGELOG.md` all identify 0.1.3.
+2. Confirm CI is green on the exact release commit on `main`.
+3. Confirm npm Trusted Publisher points to `BlackSwampAI/n8n-nodes-lago` and `.github/workflows/publish.yml`, leaves Environment blank because the workflow declares none, and has Allowed actions explicitly including direct `npm publish`. This established package must not retain an `NPM_TOKEN` secret.
+4. Create and push the annotated tag `v0.1.3` pointing to that commit.
+5. Let the immutable `publish` job publish once. Do not rerun it after a successful npm publication.
+6. Let the fresh read-only `verify-published` job scan `@blackswampai/n8n-nodes-lago@0.1.3`. If only verification fails because registry or provenance data is still propagating, rerun only the failed verifier.
+7. Verify npm `latest`, provenance attestations, and the matching GitHub release, then inspect the Creator Portal card.
+
+Future releases follow the same process with one new, matching version in the manifest, lockfile, changelog, annotated tag, npm package, and GitHub release. Never move a published tag or reuse a version.

@@ -1,18 +1,19 @@
 export function isLikelyPropagationFailure(output, packageSpec) {
-	const version = packageSpec.slice(packageSpec.lastIndexOf('@') + 1);
-	const missing = /^Reason: No package metadata found for version (\S+)\s*$/m.exec(output);
+	const expectedVersion = packageSpec.slice(packageSpec.lastIndexOf('@') + 1);
+	const missingMetadata = /^Reason: No package metadata found for version (\S+)\s*$/m.exec(output);
 	return (
-		missing?.[1] === version ||
+		(missingMetadata !== null && missingMetadata[1] === expectedVersion) ||
 		/^Reason: Analysis failed: Request failed with status code 404\s*$/m.test(output) ||
-		/Could not fetch the source repository recorded in the package's npm provenance \(Request failed with status code 404\)/.test(
-			output,
+		output.includes(
+			"Could not fetch the source repository recorded in the package's npm provenance (Request failed with status code 404)",
 		)
 	);
 }
+
 export function isDeterministicSecurityFailure(output, packageSpec) {
+	if (/ESLint violations found|malware|prohibited dependency/i.test(output)) return true;
 	return (
-		/ESLint violations found|malware|prohibited dependency/i.test(output) ||
-		(output.includes(`Package ${packageSpec} has failed security checks`) &&
-			!isLikelyPropagationFailure(output, packageSpec))
+		output.includes(`Package ${packageSpec} has failed security checks`) &&
+		!isLikelyPropagationFailure(output, packageSpec)
 	);
 }

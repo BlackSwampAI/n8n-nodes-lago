@@ -41,14 +41,6 @@ export class Lago implements INodeType {
 				required: true,
 			},
 		],
-		requestDefaults: {
-			baseURL:
-				'={{ $credentials.baseUrl.replace(/\\/+$/, "").replace(/\\/api\\/v1$/, "") + "/api/v1" }}',
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-			},
-		},
 		properties: [
 			{
 				displayName: 'Resource',
